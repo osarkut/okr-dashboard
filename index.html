@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>H2 2026 OKR & Role Dashboard</title>
+  <title>H2 2026 OKR & Schedule Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -15,10 +15,10 @@
     <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-4 gap-4">
       <div>
         <h1 class="text-2xl md:text-3xl font-extrabold text-blue-400 tracking-tight">H2 2026 Executive Dashboard</h1>
-        <p class="text-gray-400 text-sm mt-0.5">Compound OKRs, Role Trends & Real-Time Schedule</p>
+        <p class="text-gray-400 text-sm mt-0.5">Compound OKRs, Role Trends & Dynamic Week 33 Schedule</p>
       </div>
       <div class="flex items-center gap-3">
-        <span class="text-xs text-purple-400 font-semibold bg-purple-950/60 border border-purple-800 px-3.5 py-1.5 rounded-full">📍 Week 32 (Current Cycle)</span>
+        <span class="text-xs text-purple-400 font-semibold bg-purple-950/60 border border-purple-800 px-3.5 py-1.5 rounded-full">📍 Week 33 (Current Cycle)</span>
       </div>
     </div>
 
@@ -31,7 +31,7 @@
         <button id="tab-today" onclick="switchMainTab('today')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white bg-purple-950/40 border border-purple-800/50">📅 Today & Now</button>
       </div>
 
-      <!-- Week Buttons (Visible on OKR & Role Tabs) -->
+      <!-- Week Buttons -->
       <div class="flex flex-wrap gap-1.5" id="week-buttons"></div>
     </div>
 
@@ -56,7 +56,7 @@
           </div>
           <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
             <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Cycle</span>
-            <div id="active-week-label" class="text-3xl font-bold text-purple-400 mt-1">W32 <span class="text-xs text-gray-400 font-normal">/ W52</span></div>
+            <div id="active-week-label" class="text-3xl font-bold text-purple-400 mt-1">W33 <span class="text-xs text-gray-400 font-normal">/ W52</span></div>
           </div>
         </div>
 
@@ -78,86 +78,63 @@
         </div>
       </div>
 
-      <!-- TODAY & NOW TAB VIEW (Initially Hidden) -->
+      <!-- TODAY & NOW TAB VIEW -->
       <div id="view-today" class="space-y-6 hidden">
         <!-- Live Time & Current Status Banner -->
         <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-gray-800 border border-blue-700/50 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <span class="text-xs font-mono uppercase tracking-widest text-purple-300">Live Daily Context</span>
+            <span class="text-xs font-mono uppercase tracking-widest text-purple-300">Live Context Engine</span>
             <h2 class="text-3xl font-extrabold text-white mt-1" id="live-clock">--:--:--</h2>
             <p class="text-gray-300 text-sm mt-1" id="live-date">Loading date...</p>
           </div>
-          <div class="bg-gray-900/80 border border-purple-500/30 p-4 rounded-xl text-right max-w-sm w-full">
-            <span class="text-xs text-gray-400 uppercase font-bold tracking-wider block">Suggested Current Activity</span>
-            <span id="current-activity" class="text-lg font-bold text-green-400 block mt-0.5">Calculating schedule...</span>
-            <span id="next-activity" class="text-xs text-gray-400 mt-1 block">Next: --</span>
+          <div class="bg-gray-900/80 border border-purple-500/30 p-4 rounded-xl text-right max-w-md w-full">
+            <span class="text-xs text-purple-400 uppercase font-bold tracking-wider block">📍 Right Now (Planned)</span>
+            <span id="current-activity" class="text-lg font-bold text-green-400 block mt-0.5">Reading schedule...</span>
+            <span id="next-activity" class="text-xs text-gray-400 mt-1 block">Up Next: --</span>
           </div>
         </div>
 
-        <!-- Today's Strategic Priorities & Time Schedule -->
+        <!-- Today's Dynamic Schedule & Tab 33 Timetable -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <!-- Priorities Column (2 cols) -->
           <div class="lg:col-span-2 space-y-4">
             <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
-              <span>🎯 Today's Strategic Focus Areas</span>
+              <span>🎯 Week 33 Core Focus Priorities</span>
             </h3>
 
             <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Lowe's Principal PM [W-LOW]</span>
-                <span class="text-xs text-yellow-400 font-semibold">High Priority</span>
+                <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Lowe's & Work (50h Allocation)</span>
+                <span class="text-xs text-yellow-400 font-semibold">Priority 1</span>
               </div>
-              <h4 class="font-bold text-white text-base">Schedule 2 Senior Leader 1:1 Meetings</h4>
-              <p class="text-xs text-gray-400">Send calendar invite to Chandu and finalize prep notes for Wendy Williams.</p>
+              <h4 class="font-bold text-white text-base">Lowe's x 40 & OAT x 4 Execution</h4>
+              <p class="text-xs text-gray-400">Daily focus blocks 7:00 AM - 4:00 PM. OAT AI Working Sessions on Wed/Thu 5:00 PM.</p>
             </div>
 
             <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-green-400 uppercase tracking-wider">Health & Fitness [H-EXR]</span>
-                <span class="text-xs text-green-400 font-semibold">Habit</span>
+                <span class="text-xs font-bold text-green-400 uppercase tracking-wider">Health & Fitness</span>
+                <span class="text-xs text-green-400 font-semibold">5x Habit</span>
               </div>
-              <h4 class="font-bold text-white text-base">Evening Gym / Mobility Session</h4>
-              <p class="text-xs text-gray-400">45 mins strength & back mobility exercise before 8:00 PM.</p>
+              <h4 class="font-bold text-white text-base">Gym x 5 & Reflection</h4>
+              <p class="text-xs text-gray-400">Scheduled Monday & Tuesday evening blocks, plus weekend workouts.</p>
             </div>
 
             <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Family [R-PAR]</span>
-                <span class="text-xs text-purple-400 font-semibold">Non-Negotiable</span>
+                <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Mentorship & Family</span>
+                <span class="text-xs text-purple-400 font-semibold">Special Highlight</span>
               </div>
-              <h4 class="font-bold text-white text-base">Duru Driving School Application & Yaman Taekwondo</h4>
-              <p class="text-xs text-gray-400">Complete online application and prepare kids documentation.</p>
+              <h4 class="font-bold text-white text-base">Yaman Taekwondo & Birthday (Saturday Aug 15)</h4>
+              <p class="text-xs text-gray-400">Mentorship HW on Sat 12 PM, Family Dinners and Birthday celebration on Saturday.</p>
             </div>
           </div>
 
-          <!-- Daily Schedule Checklist (1 col) -->
+          <!-- Dynamic Day Schedule Checklist (1 col) -->
           <div class="bg-gray-800 border border-gray-700/80 p-5 rounded-xl space-y-4">
-            <h3 class="text-base font-bold text-gray-200 border-b border-gray-700 pb-2">Ideal Time Schedule</h3>
-            <div class="space-y-3 text-xs text-gray-300">
-              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
-                <span>06:00 - 07:00 AM</span>
-                <span class="font-semibold text-blue-400">Office / Morning Prep</span>
-              </div>
-              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
-                <span>07:00 - 04:00 PM</span>
-                <span class="font-semibold text-blue-300">Lowe's Focus Work</span>
-              </div>
-              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
-                <span>04:00 - 05:00 PM</span>
-                <span class="font-semibold text-purple-300">Family & Logistics</span>
-              </div>
-              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
-                <span>05:00 - 07:00 PM</span>
-                <span class="font-semibold text-green-300">Gym & Yaman Activity</span>
-              </div>
-              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
-                <span>07:00 - 09:00 PM</span>
-                <span class="font-semibold text-yellow-300">Courses & Personal OKRs</span>
-              </div>
-              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
-                <span>09:00 - 11:00 PM</span>
-                <span class="font-semibold text-gray-400">Reflection & Wind Down</span>
-              </div>
+            <h3 class="text-base font-bold text-gray-200 border-b border-gray-700 pb-2" id="day-schedule-title">Today's Schedule (Tab 33)</h3>
+            <div class="space-y-2.5 text-xs text-gray-300" id="today-time-slots">
+              <!-- Dynamically populated based on day of week -->
             </div>
           </div>
         </div>
@@ -167,7 +144,7 @@
 
   </div>
 
-  <!-- Detail Modal (Closes on click anywhere) -->
+  <!-- Detail Modal -->
   <div id="detail-modal" onclick="closeModal()" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm cursor-pointer">
     <div onclick="event.stopPropagation(); closeModal();" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl max-w-lg w-full space-y-4 shadow-2xl relative">
       <div class="text-right text-xs text-gray-400 underline mb-2">Click anywhere to close</div>
@@ -176,75 +153,59 @@
   </div>
 
   <script>
-    let activeTab = 'okr'; // 'okr', 'role', or 'today'
-    let selectedWeek = 'W32';
+    let activeTab = 'okr';
+    let selectedWeek = 'W33';
     let chartInstance = null;
 
-    // MULTI-WEEK DATASET WITH INDIVIDUAL OKR HISTORIES
+    // TAB 33 TIMETABLE MATRIX (Hour by Day)
+    const SCHEDULE_TAB33 = {
+      Monday: {
+        "06:00": "Tech Hub / Wake Up", "07:00": "Lowe's Focus", "12:00": "Lowe's Focus",
+        "16:00": "Drive", "17:00": "Yaman's Taekwondo", "18:00": "Gym", "19:00": "Book Club", "23:00": "Book Club", "00:00": "Reflection", "01:00": "Sleep"
+      },
+      Tuesday: {
+        "06:00": "Home Office", "07:00": "Lowe's Focus", "12:00": "OAT Operations",
+        "17:00": "MA Relief", "18:00": "Relief Directors", "19:00": "Gym", "20:00": "Yaman / Fam Reading", "00:00": "Reflection", "01:00": "Sleep"
+      },
+      Wednesday: {
+        "06:00": "Home Office", "07:00": "Lowe's Focus", "17:00": "AI Working Session",
+        "19:00": "Course", "20:00": "Mosaic Dialogue", "21:00": "Therapy", "00:00": "Reflection", "01:00": "Sleep"
+      },
+      Thursday: {
+        "06:00": "Tech Hub", "07:00": "Lowe's Focus", "16:00": "Drive",
+        "17:00": "OAT Sales", "19:00": "Course", "20:00": "Iron5 / Fam Reading", "21:00": "Barakah Bros", "00:00": "Reflection", "01:00": "Sleep"
+      },
+      Friday: {
+        "06:00": "Mooresville", "07:00": "Lowe's Focus", "13:00": "Jumah Prayer",
+        "17:00": "Dinner", "18:00": "Yaman Time", "20:00": "Barakah Bros", "21:00": "Worship", "00:00": "Reflection", "01:00": "Sleep"
+      },
+      Saturday: {
+        "06:00": "BIRTHDAY / Wake Up", "10:00": "Walk", "11:00": "Read", "12:00": "Mentorship HW",
+        "14:00": "Connect", "15:00": "Write Articles", "17:00": "Duru Time", "18:00": "Family Time", "20:00": "Family Meeting", "00:00": "Reflection"
+      },
+      Sunday: {
+        "06:00": "Wake Up", "12:00": "Mentorship HW", "15:00": "Write Articles",
+        "17:00": "Family Dinner", "21:00": "Weekly Ops", "00:00": "Reflection", "01:00": "Sleep"
+      }
+    };
+
+    // MULTI-WEEK DATASET (W29-W33)
     const MULTI_WEEK_DATA = {
-      "W28": {
-        label: "Week 28", score: 32, totalHrs: 104,
-        roles: { Work: 52, Individual: 12, Family: 25, Community: 13, Career: 0, Mentorship: 2 },
-        okrScores: { "W-LOW": 20, "W-OAT": 20, "H-EXR": 25, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 60 },
-        okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 20, hrs: 52, krs: ["Mylow vision deck started", "1:1 Strategy initialized"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 20, hrs: 4, krs: ["Delivery review pending"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 25, hrs: 3, krs: ["1 gym workout logged"] },
-          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 50, hrs: 2, krs: ["Weekly reflection block done"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 40, hrs: 25, krs: ["Family dinner & reading"] },
-          { id: "S-MOS", domain: "Service", name: "Mosaic & Community", score: 60, hrs: 13, krs: ["Mosaic breakfast & relief"] }
-        ]
-      },
-      "W29": {
-        label: "Week 29", score: 34, totalHrs: 107,
-        roles: { Work: 54, Individual: 15, Family: 19, Community: 15, Career: 2, Mentorship: 2 },
-        okrScores: { "W-LOW": 22, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
-        okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 22, hrs: 54, krs: ["Mylow outline drafted", "1:1 list finalized"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Capped hours at 4h"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 50, hrs: 4, krs: ["2 workouts logged"] },
-          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 50, hrs: 2, krs: ["Reflection block done"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 40, hrs: 19, krs: ["Taekwondo attended"] },
-          { id: "S-MOS", domain: "Service", name: "Mosaic & Community", score: 50, hrs: 15, krs: ["15 community hours logged"] }
-        ]
-      },
-      "W30": {
-        label: "Week 30", score: 36, totalHrs: 107,
-        roles: { Work: 52, Individual: 17, Family: 19, Community: 15, Career: 4, Mentorship: 0 },
-        okrScores: { "W-LOW": 25, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
-        okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 25, hrs: 52, krs: ["Mylow deck 70% complete", "LinkedIn post drafted"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Direct involvement kept low"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 50, hrs: 4, krs: ["2 workouts logged"] },
-          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 50, hrs: 2, krs: ["Reflection block done"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 40, hrs: 19, krs: ["Passport photos planned"] },
-          { id: "S-MOS", domain: "Service", name: "Mosaic & Community", score: 50, hrs: 15, krs: ["Mosaic Directors meeting"] }
-        ]
-      },
-      "W31": {
-        label: "Week 31", score: 38, totalHrs: 107,
-        roles: { Work: 65, Individual: 11, Family: 14, Community: 16, Career: 1, Mentorship: 0 },
-        okrScores: { "W-LOW": 28, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
-        okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 28, hrs: 65, krs: ["Present Mylow vision deck (100% - Done)", "Complete 1:1s with 5 leaders (20% - 1/5)", "Publish 8 LinkedIn posts (12% - 1/8)"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Cap involvement at 4h/wk (100% - On track)", "Fatih strategy meetings held (50%)"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 50, hrs: 4, krs: ["Exercise 4x/week (50% - 2/4 done)", "Back mobility work 3x/wk (33%)"] },
-          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 50, hrs: 1, krs: ["One 60-min reflection block (100% - Done)"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 40, hrs: 14, krs: ["Duru driving & passports (50% - Photos done)", "Yaman courses & Taekwondo (100% - Done)"] },
-          { id: "S-MOS", domain: "Service", name: "Mosaic & Community", score: 50, hrs: 16, krs: ["Cap community at 11h/wk (0% - Exceeded at 16h)", "Protect biweekly Relief block (100% - Done)"] }
-        ]
-      },
-      "W32": {
-        label: "Week 32 (Current)", score: 52, totalHrs: 105,
+      "W29": { label: "Week 29", score: 34, totalHrs: 107, roles: { Work: 54, Individual: 15, Family: 19, Community: 15, Career: 2, Mentorship: 2 }, okrScores: { "W-LOW": 22, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 22, hrs: 54, krs: ["Mylow outline drafted"] }] },
+      "W30": { label: "Week 30", score: 36, totalHrs: 107, roles: { Work: 52, Individual: 17, Family: 19, Community: 15, Career: 4, Mentorship: 0 }, okrScores: { "W-LOW": 25, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 25, hrs: 52, krs: ["Mylow deck 70% complete"] }] },
+      "W31": { label: "Week 31", score: 38, totalHrs: 107, roles: { Work: 65, Individual: 11, Family: 14, Community: 16, Career: 1, Mentorship: 0 }, okrScores: { "W-LOW": 28, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 28, hrs: 65, krs: ["Mylow vision deck done"] }] },
+      "W32": { label: "Week 32", score: 45, totalHrs: 105, roles: { Work: 52, Individual: 13, Family: 14, Community: 15, Career: 5, Mentorship: 2 }, okrScores: { "W-LOW": 35, "W-OAT": 30, "H-EXR": 60, "WI-WRT": 55, "R-PAR": 50, "S-MOS": 60 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 35, hrs: 52, krs: ["Furniture & 1:1 setup"] }] },
+      "W33": {
+        label: "Week 33 (Current)", score: 55, totalHrs: 105,
         roles: { Work: 50, Individual: 22, Family: 11, Community: 8, Career: 9, Mentorship: 5 },
-        okrScores: { "W-LOW": 45, "W-OAT": 40, "H-EXR": 75, "WI-WRT": 60, "R-PAR": 60, "S-MOS": 80 },
+        okrScores: { "W-LOW": 50, "W-OAT": 45, "H-EXR": 75, "WI-WRT": 60, "R-PAR": 65, "S-MOS": 75 },
         okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 45, hrs: 50, krs: ["Schedule 2 senior 1:1s", "Publish 2nd LinkedIn post", "Write Mylow strategy narrative"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 40, hrs: 4, krs: ["Finalize delivery ownership document"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 75, hrs: 4, krs: ["4 workouts scheduled", "3 mobility blocks planned"] },
-          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 60, hrs: 9, krs: ["Article 1 draft outline & Google prompt course"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 60, hrs: 11, krs: ["Submit Canada passport application", "Duru driving school booking"] },
-          { id: "S-MOS", domain: "Service", name: "Mosaic & Community", score: 80, hrs: 8, krs: ["Enforce 11h community cap (Delegate 5 hrs)"] }
+          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 50, hrs: 50, krs: ["Lowe's x 40 & AI Working Session", "1:1 Senior Leader follow-ups"] },
+          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 45, hrs: 4, krs: ["OAT Sales & AI Projects execution"] },
+          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 75, hrs: 5, krs: ["Gym x 5 sessions scheduled"] },
+          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 60, hrs: 9, krs: ["Course x 3 & Reflection x 2"] },
+          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 65, hrs: 11, krs: ["Yaman x 4 & Birthday celebration (Sat)"] },
+          { id: "S-MOS", domain: "Service", name: "Mosaic & Community", score: 75, hrs: 8, krs: ["Book Club x 4 & MA Relief Directors"] }
         ]
       }
     };
@@ -259,11 +220,11 @@
           ? "bg-blue-600 text-white font-bold border-blue-500 shadow scale-105" 
           : "bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium border-gray-600";
 
-        if (weekKey === "W32") btnClass += " border-2 border-purple-400";
+        if (weekKey === "W33") btnClass += " border-2 border-purple-400";
 
         const btn = document.createElement('button');
         btn.className = `px-3 py-1 rounded-lg text-xs border transition-all duration-150 ${btnClass}`;
-        btn.innerText = weekKey === "W32" ? "W32 (Current)" : weekKey;
+        btn.innerText = weekKey === "W33" ? "W33 (Current)" : weekKey;
         btn.onclick = () => { selectedWeek = weekKey; initButtons(); renderDashboard(); };
         container.appendChild(btn);
       });
@@ -273,17 +234,15 @@
       activeTab = tab;
       ['okr', 'role', 'today'].forEach(t => {
         const el = document.getElementById(`tab-${t}`);
-        if (t === tab) {
-          el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white";
-        } else {
-          el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white";
-        }
+        if (t === tab) el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white";
+        else el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white";
       });
 
       if (tab === 'today') {
         document.getElementById('view-analytics').classList.add('hidden');
         document.getElementById('view-today').classList.remove('hidden');
         document.getElementById('week-buttons').classList.add('hidden');
+        updateTodaySchedule();
       } else {
         document.getElementById('view-analytics').classList.remove('hidden');
         document.getElementById('view-today').classList.add('hidden');
@@ -294,7 +253,6 @@
 
     function renderDashboard() {
       const weekData = MULTI_WEEK_DATA[selectedWeek];
-
       document.getElementById('overall-score').innerText = `${weekData.score}%`;
       document.getElementById('total-hours').innerText = `${weekData.totalHrs} hrs`;
       document.getElementById('active-week-label').innerHTML = `${selectedWeek} <span class="text-xs text-gray-400 font-normal">/ W52</span>`;
@@ -308,7 +266,7 @@
 
     function renderOKRView(weekData) {
       document.getElementById('chart-title').innerText = "Compound & Individual OKR Execution Trends (%)";
-      document.getElementById('cards-title').innerText = `${weekData.label} — OKR Objectives (Click any card to view)`;
+      document.getElementById('cards-title').innerText = `${weekData.label} — Objectives Breakdown`;
 
       const grid = document.getElementById('cards-grid');
       grid.innerHTML = '';
@@ -365,7 +323,6 @@
       renderRoleChart();
     }
 
-    // COMPOUND OKR MULTI-LINE CHART
     function renderCompoundOKRChart() {
       const ctx = document.getElementById('mainChart').getContext('2d');
       if (chartInstance) chartInstance.destroy();
@@ -374,7 +331,6 @@
       const okrList = ["W-LOW", "W-OAT", "H-EXR", "WI-WRT", "R-PAR", "S-MOS"];
       const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#6366F1'];
 
-      // Compound Average Line
       const compoundLine = {
         label: '⚡ Compound Overall Average',
         data: weekKeys.map(k => MULTI_WEEK_DATA[k].score),
@@ -386,7 +342,6 @@
         fill: true
       };
 
-      // Individual OKR Lines
       const individualLines = okrList.map((id, idx) => ({
         label: id,
         data: weekKeys.map(k => (MULTI_WEEK_DATA[k].okrScores && MULTI_WEEK_DATA[k].okrScores[id]) || 0),
@@ -399,13 +354,7 @@
       chartInstance = new Chart(ctx, {
         type: 'line',
         data: { labels: weekKeys.map(k => MULTI_WEEK_DATA[k].label), datasets: [compoundLine, ...individualLines] },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          scales: {
-            y: { beginAtZero: true, max: 100, grid: { color: '#374151' } },
-            x: { grid: { display: false } }
-          }
-        }
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, grid: { color: '#374151' } }, x: { grid: { display: false } } } }
       });
     }
 
@@ -432,24 +381,64 @@
       });
     }
 
+    // Dynamic Today & Now Scheduler Engine
+    function updateTodaySchedule() {
+      const now = new Date();
+      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const dayName = days[now.getDay()];
+      const daySchedule = SCHEDULE_TAB33[dayName] || SCHEDULE_TAB33["Monday"];
+
+      document.getElementById('day-schedule-title').innerText = `${dayName}'s Schedule (Tab 33)`;
+
+      const container = document.getElementById('today-time-slots');
+      container.innerHTML = '';
+
+      const currentHour = now.getHours();
+      let currentTask = "Personal / Recovery Time";
+      let nextTask = "Wind Down & Sleep";
+
+      const times = Object.keys(daySchedule).sort();
+
+      times.forEach((t, i) => {
+        const slotHour = parseInt(t.split(":")[0]);
+        const task = daySchedule[t];
+        const isPast = slotHour < currentHour;
+        const isCurrent = slotHour === currentHour;
+
+        if (isCurrent) {
+          currentTask = task;
+          nextTask = daySchedule[times[i + 1]] || "End of Day Routine";
+        }
+
+        let bgStyle = "bg-gray-900/60 border-gray-700/50";
+        if (isCurrent) bgStyle = "bg-purple-900/50 border-purple-500 font-bold text-white shadow";
+        else if (isPast) bgStyle = "bg-gray-900/20 border-gray-800/40 opacity-50";
+
+        container.innerHTML += `
+          <div class="flex justify-between items-center p-2.5 rounded border ${bgStyle}">
+            <span>${t}</span>
+            <span class="${isCurrent ? 'text-purple-300' : 'text-blue-300'}">${task}</span>
+          </div>
+        `;
+      });
+
+      document.getElementById('current-activity').innerText = currentTask;
+      document.getElementById('next-activity').innerText = `Up Next: ${nextTask}`;
+    }
+
     function openModal(okrId) {
       const weekData = MULTI_WEEK_DATA[selectedWeek];
       const obj = weekData.okrs.find(o => o.id === okrId);
       if (!obj) return;
 
       const krList = obj.krs.map(k => `<li class="text-sm text-gray-300">• ${k}</li>`).join('');
-
       document.getElementById('modal-content').innerHTML = `
         <div class="text-xs font-mono text-blue-400 uppercase tracking-widest">${obj.id} — ${obj.domain}</div>
         <h2 class="text-xl font-bold text-white mb-2">${obj.name}</h2>
         <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
           <div class="text-xs text-gray-400">Current Score: <strong class="text-white text-sm">${obj.score}%</strong></div>
-          <div class="text-xs text-gray-400 mt-1">Logged Hours: <strong class="text-green-400 text-sm">${obj.hrs} hrs</strong></div>
         </div>
-        <div class="mt-4">
-          <h4 class="text-xs font-bold uppercase text-gray-400 mb-2">Key Result Progress</h4>
-          <ul class="space-y-2">${krList}</ul>
-        </div>
+        <div class="mt-4"><h4 class="text-xs font-bold uppercase text-gray-400 mb-2">Key Result Progress</h4><ul class="space-y-2">${krList}</ul></div>
       `;
       document.getElementById('detail-modal').classList.remove('hidden');
       document.getElementById('detail-modal').classList.add('flex');
@@ -459,10 +448,7 @@
       document.getElementById('modal-content').innerHTML = `
         <div class="text-xs font-mono text-purple-400 uppercase tracking-widest">Role Breakdown</div>
         <h2 class="text-xl font-bold text-white mb-2">${role} Role</h2>
-        <div class="bg-gray-900 p-4 rounded-lg border border-gray-700">
-          <span class="text-xs text-gray-400 block">Logged Time for ${selectedWeek}</span>
-          <span class="text-3xl font-extrabold text-green-400">${hrs} hours</span>
-        </div>
+        <div class="bg-gray-900 p-4 rounded-lg border border-gray-700"><span class="text-3xl font-extrabold text-green-400">${hrs} hours</span></div>
       `;
       document.getElementById('detail-modal').classList.remove('hidden');
       document.getElementById('detail-modal').classList.add('flex');
@@ -473,25 +459,12 @@
       document.getElementById('detail-modal').classList.remove('flex');
     }
 
-    // Live Clock & Schedule Engine
     function startClock() {
       setInterval(() => {
         const now = new Date();
         document.getElementById('live-clock').innerText = now.toLocaleTimeString();
         document.getElementById('live-date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-
-        const hr = now.getHours();
-        let current = "Personal & Family Time";
-        let next = "Night Reflection & Sleep";
-
-        if (hr >= 6 && hr < 7) { current = "Morning Prep & Tech Hub"; next = "Lowe's Focus Block"; }
-        else if (hr >= 7 && hr < 16) { current = "Lowe's Work & Meetings"; next = "Family Logistics & Gym"; }
-        else if (hr >= 16 && hr < 18) { current = "Family / Yaman Taekwondo"; next = "Evening Workout"; }
-        else if (hr >= 18 && hr < 20) { current = "Gym & Back Mobility"; next = "Personal OKR / Course Block"; }
-        else if (hr >= 20 && hr < 22) { current = "Course Work & Reflection"; next = "Wind Down & Sleep"; }
-
-        document.getElementById('current-activity').innerText = current;
-        document.getElementById('next-activity').innerText = `Next: ${next}`;
+        if (activeTab === 'today') updateTodaySchedule();
       }, 1000);
     }
 
