@@ -3,144 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2026 Weekly Plan - Tab 32_ai Dashboard</title>
+  <title>Weekly Schedule - Week 32 (2026)</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom scrollbar for clean dashboard feel */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
 
-  <!-- Header Section -->
-  <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 pb-6 border-b border-slate-800">
+  <!-- Header -->
+  <header class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-slate-800">
     <div>
-      <h1 class="text-3xl font-bold tracking-tight text-white">Weekly Plan Dashboard</h1>
-      <p class="text-slate-400 text-sm mt-1">Live Sync: Google Sheet Tab <span class="text-emerald-400 font-mono font-semibold">32_ai</span></p>
+      <div class="flex items-center gap-2">
+        <h1 class="text-2xl font-bold tracking-tight text-white">Weekly Execution Plan</h1>
+        <span class="text-xs font-mono font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2.5 py-0.5 rounded-full">Week 32</span>
+      </div>
+      <p class="text-slate-400 text-sm mt-1">August 03, 2026 – August 09, 2026</p>
     </div>
+
+    <!-- Quick Stats -->
     <div class="flex items-center gap-3">
-      <span id="sync-status" class="text-xs text-yellow-400 font-semibold bg-yellow-950/60 border border-yellow-800 px-3.5 py-1.5 rounded-full animate-pulse">
-        ● Initializing Sync...
-      </span>
-      <button onclick="syncDataFromSheet()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">
-        🔄 Refresh
-      </button>
+      <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-center">
+        <span class="text-[10px] uppercase font-bold text-slate-500 block">Work Hours</span>
+        <span class="text-lg font-bold text-amber-400">46 hrs</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-center">
+        <span class="text-[10px] uppercase font-bold text-slate-500 block">Community & Family</span>
+        <span class="text-lg font-bold text-purple-400">38 hrs</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-center">
+        <span class="text-[10px] uppercase font-bold text-slate-500 block">Vacation</span>
+        <span class="text-lg font-bold text-blue-400">32 hrs</span>
+      </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto space-y-8">
-    
-    <!-- Summary Stats Bar -->
-    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
-        <span class="text-slate-400 text-xs uppercase font-semibold tracking-wider">Total Scheduled Items</span>
-        <div id="total-tasks" class="text-3xl font-extrabold text-white mt-1">--</div>
-      </div>
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
-        <span class="text-slate-400 text-xs uppercase font-semibold tracking-wider">Reminders / To-Dos</span>
-        <div id="reminder-tasks" class="text-3xl font-extrabold text-amber-400 mt-1">--</div>
-      </div>
-      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
-        <span class="text-slate-400 text-xs uppercase font-semibold tracking-wider">Status Overview</span>
-        <div id="status-overview" class="text-3xl font-extrabold text-emerald-400 mt-1">--</div>
-      </div>
-    </section>
+  <!-- Filter Bar -->
+  <div class="max-w-7xl mx-auto mb-6 flex flex-wrap gap-2 items-center">
+    <span class="text-xs font-semibold text-slate-400 mr-2">Highlight Category:</span>
+    <button onclick="filterCategory('all')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-slate-800 text-white hover:bg-slate-700 transition">All</button>
+    <button onclick="filterCategory('work')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-amber-950/60 border border-amber-800/60 text-amber-300 hover:bg-amber-900/60 transition">Work (Lowe's/OAT)</button>
+    <button onclick="filterCategory('location')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-purple-950/60 border border-purple-800/60 text-purple-300 hover:bg-purple-900/60 transition">Locations</button>
+    <button onclick="filterCategory('community')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-rose-950/60 border border-rose-800/60 text-rose-300 hover:bg-rose-900/60 transition">Community & Kids</button>
+    <button onclick="filterCategory('vacation')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-blue-950/60 border border-blue-800/60 text-blue-300 hover:bg-blue-900/60 transition">Vacation</button>
+  </div>
 
-    <!-- Task List Section -->
-    <section class="bg-slate-900/80 border border-slate-800 rounded-xl p-6">
-      <h2 class="text-lg font-semibold text-white mb-4">Task Breakdown</h2>
-      <div id="task-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="col-span-full text-center py-12 text-slate-500">
-          Loading data directly from Google Sheet...
-        </div>
-      </div>
-    </section>
-
+  <!-- Calendar Grid Container -->
+  <main class="max-w-7xl mx-auto bg-slate-900/70 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse min-w-[800px]">
+        <thead>
+          <tr class="bg-slate-950/90 text-xs font-semibold text-slate-300 border-b border-slate-800">
+            <th class="p-3 w-20 text-center border-r border-slate-800">Time</th>
+            <th class="p-3 text-center border-r border-slate-800">Monday <span class="block text-[10px] text-slate-500 font-normal">08/03</span></th>
+            <th class="p-3 text-center border-r border-slate-800">Tuesday <span class="block text-[10px] text-slate-500 font-normal">08/04</span></th>
+            <th class="p-3 text-center border-r border-slate-800">Wednesday <span class="block text-[10px] text-slate-500 font-normal">08/05</span></th>
+            <th class="p-3 text-center border-r border-slate-800">Thursday <span class="block text-[10px] text-slate-500 font-normal">08/06</span></th>
+            <th class="p-3 text-center border-r border-slate-800">Friday <span class="block text-[10px] text-slate-500 font-normal">08/07</span></th>
+            <th class="p-3 text-center border-r border-slate-800">Saturday <span class="block text-[10px] text-slate-500 font-normal">08/08</span></th>
+            <th class="p-3 text-center">Sunday <span class="block text-[10px] text-slate-500 font-normal">08/09</span></th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body" class="text-xs divide-y divide-slate-800/60">
+          <!-- Rendered via JS -->
+        </tbody>
+      </table>
+    </div>
   </main>
 
   <script>
-    const SHEET_ENDPOINT = "https://docs.google.com/spreadsheets/d/184A7LoWQ637eHfqM3TLeXZ53BSTngdnUEUyS-U9l31c/gviz/tq?tqx=out:json&sheet=32_ai";
+    // Exact Schedule Data Extracted From Your Spreadsheet Image
+    const scheduleData = [
+      { time: "6:00 am",  mon: { text: "Tech Hub", cat: "location" }, tue: { text: "Home Office", cat: "location" }, wed: { text: "Home Office", cat: "location" }, thu: { text: "Tech Hub", cat: "location" }, fri: { text: "Mooresville", cat: "location" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "7:00 am",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "8:00 am",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "9:00 am",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "10:00 am", mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "11:00 am", mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "12:00 pm", mon: { text: "Lowe's", cat: "work" }, tue: { text: "Fatih - OAT", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "1:00 pm",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Jumah", cat: "personal" }, sat: { text: "Lunch", cat: "personal" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "2:00 pm",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "3:00 pm",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "4:00 pm",  mon: { text: "Drive", cat: "travel" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Drive", cat: "travel" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Check in Resort", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "5:00 pm",  mon: { text: "Yaman's Taekwondo", cat: "kids" }, tue: { text: "Yaman's Taekwondo", cat: "kids" }, wed: { text: "Mosaic 5:30", cat: "community" }, thu: { text: "AI Working Session", cat: "ai" }, fri: { text: "Dinner", cat: "personal" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "6:00 pm",  mon: { text: "Yaman", cat: "kids" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "AI Working Session", cat: "ai" }, fri: { text: "Yaman", cat: "kids" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "7:00 pm",  mon: { text: "SCM Board", cat: "community" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Course", cat: "ai" }, fri: { text: "Yaman", cat: "kids" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "8:00 pm",  mon: { text: "Mosaic Relief", cat: "community" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Iron5", cat: "personal" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "9:00 pm",  mon: { text: "Mosaic Executives", cat: "community" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Therapy", cat: "personal" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "10:00 pm", mon: { text: "Mosaic Executives", cat: "community" }, tue: { text: "Watch", cat: "personal" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Mentorship", cat: "work" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "11:00 pm", mon: { text: "Read", cat: "personal" }, tue: { text: "Watch", cat: "personal" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Mentorship", cat: "work" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "12:00 am", mon: { text: "Reflection", cat: "personal" }, tue: { text: "Reflection", cat: "personal" }, wed: { text: "Reflection", cat: "personal" }, thu: { text: "Reflection", cat: "personal" }, fri: { text: "Reflection", cat: "personal" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
+      { time: "1:00 am",  mon: { text: "Sleep", cat: "sleep" }, tue: { text: "Sleep", cat: "sleep" }, wed: { text: "Sleep", cat: "sleep" }, thu: { text: "Sleep", cat: "sleep" }, fri: { text: "Sleep", cat: "sleep" }, sat: { text: "Sleep", cat: "sleep" }, sun: { text: "Sleep", cat: "sleep" } }
+    ];
 
-    async function syncDataFromSheet() {
-      const statusEl = document.getElementById('sync-status');
-      const container = document.getElementById('task-container');
+    // Color mapper replicating your spreadsheet styles
+    function getCellStyles(item) {
+      if (!item.text) return "bg-slate-900/40 text-slate-600";
 
-      statusEl.innerText = "● Syncing Data...";
-      statusEl.className = "text-xs text-yellow-400 font-semibold bg-yellow-950/60 border border-yellow-800 px-3.5 py-1.5 rounded-full animate-pulse";
-
-      try {
-        const response = await fetch(SHEET_ENDPOINT);
-        const rawText = await response.text();
-
-        // Strip the google.visualization.Query.setResponse() wrapper
-        const jsonMatch = rawText.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-        if (!jsonMatch || !jsonMatch[1]) throw new Error("Invalid payload structure received.");
-
-        const parsed = JSON.parse(jsonMatch[1]);
-        const cols = parsed.table.cols.map(c => c.label);
-        
-        // Map raw cells into structured JavaScript objects
-        const rows = parsed.table.rows.map(r => {
-          const item = {};
-          r.c.forEach((cell, idx) => {
-            const key = cols[idx] || `col_${idx}`;
-            item[key] = cell ? (cell.f !== undefined ? cell.f : cell.v) : null;
-          });
-          return item;
-        });
-
-        // Update Counter Cards
-        const totalItems = rows.length;
-        const reminderItems = rows.filter(r => r["Reminder?"] === "Yes" || r["Todo?"] === "Yes").length;
-        const plannedItems = rows.filter(r => r["Status"] === "Planned").length;
-
-        document.getElementById('total-tasks').innerText = totalItems;
-        document.getElementById('reminder-tasks').innerText = reminderItems;
-        document.getElementById('status-overview').innerText = `${plannedItems} Planned`;
-
-        // Render Task Cards
-        container.innerHTML = "";
-        rows.forEach(item => {
-          const taskName = item["Task"] || "Unnamed Entry";
-          const day = item["Day"] || "Unscheduled";
-          const date = item["Date"] || "";
-          const role = item["Role"] || "General";
-          const area = item["Area"] || "";
-          const type = item["Type"] || "Task";
-          const startTime = item["Start Time"] || "";
-          const endTime = item["End Time"] || "";
-          const isReminder = item["Reminder?"] === "Yes";
-
-          const card = document.createElement('div');
-          card.className = "bg-slate-950 border border-slate-800 rounded-lg p-4 flex flex-col justify-between hover:border-slate-700 transition";
-
-          card.innerHTML = `
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="text-xs font-semibold px-2 py-0.5 rounded ${isReminder ? 'bg-amber-950/80 text-amber-400 border border-amber-800/50' : 'bg-slate-800 text-slate-300'}">
-                  ${role}${area ? ' • ' + area : ''}
-                </span>
-                <span class="text-xs text-slate-400 font-mono">${day} ${date}</span>
-              </div>
-              <h3 class="text-base font-semibold text-slate-100">${taskName}</h3>
-            </div>
-            <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-900 text-xs text-slate-400">
-              <span>${startTime && endTime ? startTime + ' - ' + endTime : type}</span>
-              <span class="text-emerald-400 font-medium">${item["Status"] || 'Active'}</span>
-            </div>
-          `;
-          container.appendChild(card);
-        });
-
-        statusEl.innerText = "● Live Sync Active";
-        statusEl.className = "text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-800 px-3.5 py-1.5 rounded-full";
-
-      } catch (err) {
-        console.error("Fetch/Parse Error:", err);
-        statusEl.innerText = "● Sync Error";
-        statusEl.className = "text-xs text-rose-400 font-semibold bg-rose-950/60 border border-rose-800 px-3.5 py-1.5 rounded-full";
-        container.innerHTML = `<div class="col-span-full text-center py-8 text-rose-400">Failed to load sheet data: ${err.message}</div>`;
+      switch(item.cat) {
+        case "location":
+          return "bg-purple-900/80 text-purple-200 font-semibold border-l-2 border-purple-400";
+        case "work":
+          return "bg-amber-100/10 text-amber-200 border-l-2 border-amber-500/80";
+        case "kids":
+          return "bg-slate-800 text-rose-400 font-semibold border-l-2 border-rose-500";
+        case "community":
+          return "bg-slate-800 text-amber-400 font-medium border-l-2 border-amber-400";
+        case "ai":
+          return "bg-teal-950/80 text-teal-300 font-medium border-l-2 border-teal-400";
+        case "vacation":
+          return "bg-purple-950/70 text-purple-300 italic font-semibold border-l-2 border-purple-400";
+        case "travel":
+          return "bg-slate-800/80 text-slate-300 italic";
+        case "sleep":
+          return "bg-blue-950 text-blue-300 font-bold tracking-wider";
+        default:
+          return "bg-slate-800/60 text-slate-200";
       }
     }
 
-    // Auto-fetch on page load
-    document.addEventListener("DOMContentLoaded", syncDataFromSheet);
+    const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
+    function renderSchedule(activeCat = 'all') {
+      const tbody = document.getElementById('schedule-body');
+      tbody.innerHTML = '';
+
+      scheduleData.forEach(row => {
+        const tr = document.createElement('tr');
+        
+        // Time Cell
+        let html = `<td class="p-2.5 text-center font-mono text-[11px] text-slate-400 font-medium border-r border-slate-800 bg-slate-950/60">${row.time}</td>`;
+
+        days.forEach(day => {
+          const item = row[day];
+          const styleClass = getCellStyles(item);
+          const isHighlighted = activeCat === 'all' || 
+                                (activeCat === 'work' && item.cat === 'work') ||
+                                (activeCat === 'location' && item.cat === 'location') ||
+                                (activeCat === 'community' && (item.cat === 'community' || item.cat === 'kids')) ||
+                                (activeCat === 'vacation' && item.cat === 'vacation');
+
+          const opacityClass = isHighlighted ? 'opacity-100 scale-100' : 'opacity-20 blur-[0.5px]';
+
+          html += `
+            <td class="p-1 border-r border-slate-800/60 transition-all duration-200">
+              <div class="p-2 rounded min-h-[34px] flex items-center justify-center text-center ${styleClass} ${opacityClass}">
+                ${item.text}
+              </div>
+            </td>
+          `;
+        });
+
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterCategory(cat) {
+      renderSchedule(cat);
+    }
+
+    // Initial render
+    renderSchedule('all');
   </script>
 </body>
 </html>
