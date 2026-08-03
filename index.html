@@ -15,23 +15,20 @@
     <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-4 gap-4">
       <div>
         <h1 class="text-2xl md:text-3xl font-extrabold text-blue-400 tracking-tight">H2 2026 Executive Dashboard</h1>
-        <p class="text-gray-400 text-sm mt-0.5">Compound OKRs, Role Trends & Dynamic Week 32 Execution</p>
+        <p class="text-gray-400 text-sm mt-0.5">Live OKR Tracker & Week 32 Execution Schedule</p>
       </div>
       <div class="flex items-center gap-3">
-        <span class="text-xs text-purple-400 font-semibold bg-purple-950/60 border border-purple-800 px-3.5 py-1.5 rounded-full">📍 Week 32 (ACTIVE NOW)</span>
+        <span class="text-xs text-purple-400 font-semibold bg-purple-950/60 border border-purple-800 px-3.5 py-1.5 rounded-full">📍 Week 32 (Just Started — 0% Done)</span>
       </div>
     </div>
 
     <!-- View Switcher Tabs -->
     <div class="bg-gray-800 border border-gray-700/60 p-3 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
-      <!-- Primary Tabs -->
       <div class="flex bg-gray-900 p-1 rounded-lg border border-gray-700 w-full md:w-auto">
         <button id="tab-okr" onclick="switchMainTab('okr')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white">🎯 OKR Compound View</button>
         <button id="tab-role" onclick="switchMainTab('role')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white">📊 Role Hours View</button>
-        <button id="tab-today" onclick="switchMainTab('today')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white bg-purple-950/40 border border-purple-800/50">📅 Today & Weekly To-Dos</button>
+        <button id="tab-today" onclick="switchMainTab('today')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white bg-purple-950/40 border border-purple-800/50">📅 Today & Schedule</button>
       </div>
-
-      <!-- Week Buttons -->
       <div class="flex flex-wrap gap-1.5" id="week-buttons"></div>
     </div>
 
@@ -40,18 +37,17 @@
 
       <!-- OKR / ROLE CONTENT VIEW -->
       <div id="view-analytics" class="space-y-6">
-        <!-- Summary Metrics Bar -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Compound OKR Score</span>
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Compound Score</span>
             <div id="overall-score" class="text-3xl font-bold text-blue-400 mt-1">--%</div>
           </div>
           <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Logged Hours</span>
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Logged Hours</span>
             <div id="total-hours" class="text-3xl font-bold text-green-400 mt-1">-- hrs</div>
           </div>
           <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Top Priority Category</span>
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Top Category</span>
             <div id="top-category" class="text-3xl font-bold text-gray-200 mt-1">Work</div>
           </div>
           <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
@@ -60,29 +56,17 @@
           </div>
         </div>
 
-        <!-- Week 31 Archived Summary Card (Banner) -->
-        <div id="w31-summary-banner" class="bg-green-950/40 border border-green-800/60 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
-          <div>
-            <span class="text-xs font-bold text-green-400 uppercase tracking-wider">✅ Week 31 Execution Completed</span>
-            <p class="text-sm text-gray-300 mt-0.5">Logged 107 total hours (65h Work, 16h Community, 14h Family). Mylow Vision Deck & Passports done.</p>
-          </div>
-          <button onclick="openW31SummaryModal()" class="bg-green-700 hover:bg-green-600 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition whitespace-nowrap">
-            📋 View W31 Full Summary
-          </button>
-        </div>
-
         <!-- Chart Section -->
         <div class="bg-gray-800 border border-gray-700/60 p-6 rounded-xl shadow-lg">
           <div class="flex justify-between items-center mb-4">
-            <h2 id="chart-title" class="text-lg font-bold text-gray-200">Compound OKR Execution Trends</h2>
-            <span class="text-xs text-gray-400">Hover datasets to inspect</span>
+            <h2 id="chart-title" class="text-lg font-bold text-gray-200">Execution Progress Trends</h2>
+            <span class="text-xs text-gray-400">Week 32 baseline resets to active completions</span>
           </div>
           <div class="h-72 relative">
             <canvas id="mainChart"></canvas>
           </div>
         </div>
 
-        <!-- Dynamic Cards Grid -->
         <div>
           <h2 class="text-xl font-bold text-gray-200 mb-4" id="cards-title">Objectives Breakdown</h2>
           <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
@@ -91,7 +75,6 @@
 
       <!-- TODAY & NOW TAB VIEW -->
       <div id="view-today" class="space-y-6 hidden">
-        <!-- Live Time & Current Status Banner -->
         <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-gray-800 border border-blue-700/50 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <span class="text-xs font-mono uppercase tracking-widest text-purple-300">Live Context Engine</span>
@@ -99,53 +82,34 @@
             <p class="text-gray-300 text-sm mt-1" id="live-date">Loading date...</p>
           </div>
           <div class="bg-gray-900/80 border border-purple-500/30 p-4 rounded-xl text-right max-w-md w-full">
-            <span class="text-xs text-purple-400 uppercase font-bold tracking-wider block">📍 Right Now (Tab 32 Schedule)</span>
+            <span class="text-xs text-purple-400 uppercase font-bold tracking-wider block">📍 Right Now (Tab 32)</span>
             <span id="current-activity" class="text-lg font-bold text-green-400 block mt-0.5">Reading schedule...</span>
             <span id="next-activity" class="text-xs text-gray-400 mt-1 block">Up Next: --</span>
           </div>
         </div>
 
-        <!-- Today's Dynamic Schedule & Tab 32 To-Dos -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- Week 32 To-Dos & Actionable Checklist (2 cols) -->
           <div class="lg:col-span-2 space-y-4">
-            <h3 class="text-lg font-bold text-gray-200 flex items-center justify-between">
-              <span>📋 Week 32 Priority To-Dos & Reminders</span>
-              <span class="text-xs text-gray-400 font-normal">Click items to complete</span>
-            </h3>
-
-            <!-- Checklist Grid -->
-            <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3" id="todo-container">
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50 cursor-pointer hover:border-blue-500 transition" onclick="toggleTodo(this)">
-                <input type="checkbox" class="w-4 h-4 rounded text-blue-600 focus:ring-0 cursor-pointer">
+            <h3 class="text-lg font-bold text-gray-200">📋 Week 32 Focus Priorities</h3>
+            <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
+              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
                 <span class="text-sm font-semibold text-gray-200">Set 1:1 with Lowe's leaders (Wendy Williams, Joshua Engleka, Chandu)</span>
               </div>
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50 cursor-pointer hover:border-blue-500 transition" onclick="toggleTodo(this)">
-                <input type="checkbox" class="w-4 h-4 rounded text-blue-600 focus:ring-0 cursor-pointer">
-                <span class="text-sm font-semibold text-gray-200">Prepare MMOG/SCM deliverables</span>
+              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
+                <span class="text-sm font-semibold text-gray-200">MMOG/SCM Deliverables</span>
               </div>
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50 cursor-pointer hover:border-blue-500 transition" onclick="toggleTodo(this)">
-                <input type="checkbox" class="w-4 h-4 rounded text-blue-600 focus:ring-0 cursor-pointer">
+              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
                 <span class="text-sm font-semibold text-gray-200">Message photographer regarding kids photos & Canadian passport signatures</span>
               </div>
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50 cursor-pointer hover:border-blue-500 transition" onclick="toggleTodo(this)">
-                <input type="checkbox" class="w-4 h-4 rounded text-blue-600 focus:ring-0 cursor-pointer">
-                <span class="text-sm font-semibold text-gray-200">Furniture installation coordination (Friday)</span>
-              </div>
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50 cursor-pointer hover:border-blue-500 transition" onclick="toggleTodo(this)">
-                <input type="checkbox" class="w-4 h-4 rounded text-blue-600 focus:ring-0 cursor-pointer">
-                <span class="text-sm font-semibold text-gray-200">Fatih - OAT Operations alignment session (Tuesday 12 PM)</span>
+              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
+                <span class="text-sm font-semibold text-gray-200">Furniture installation coordination (Friday 9:00 AM)</span>
               </div>
             </div>
           </div>
 
-          <!-- Dynamic Day Schedule Checklist (1 col) -->
           <div class="bg-gray-800 border border-gray-700/80 p-5 rounded-xl space-y-4">
             <h3 class="text-base font-bold text-gray-200 border-b border-gray-700 pb-2" id="day-schedule-title">Today's Schedule (Tab 32)</h3>
-            <div class="space-y-2.5 text-xs text-gray-300" id="today-time-slots">
-              <!-- Dynamically populated based on day of week -->
-            </div>
+            <div class="space-y-2.5 text-xs text-gray-300" id="today-time-slots"></div>
           </div>
         </div>
       </div>
@@ -154,7 +118,6 @@
 
   </div>
 
-  <!-- Detail Modal -->
   <div id="detail-modal" onclick="closeModal()" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm cursor-pointer">
     <div onclick="event.stopPropagation(); closeModal();" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl max-w-lg w-full space-y-4 shadow-2xl relative">
       <div class="text-right text-xs text-gray-400 underline mb-2">Click anywhere to close</div>
@@ -167,39 +130,18 @@
     let selectedWeek = 'W32';
     let chartInstance = null;
 
-    // TAB 32 TIMETABLE MATRIX (Hour by Day)
+    // TAB 32 SCHEDULE DIRECTLY FROM YOUR SHEET
     const SCHEDULE_TAB32 = {
-      Monday: {
-        "06:00": "Tech Hub / Wake Up", "07:00": "Lowe's Focus", "16:00": "Drive",
-        "17:00": "Yaman's Taekwondo", "19:00": "MMOG/SCM", "20:00": "Mosaic Relief", "21:00": "Mosaic Executives", "00:00": "Reflection", "01:00": "Sleep"
-      },
-      Tuesday: {
-        "06:00": "Home Office", "07:00": "Lowe's Focus", "12:00": "Fatih - OAT Session",
-        "17:00": "Yaman's Taekwondo", "18:00": "Book Club", "22:00": "Watch", "00:00": "Reflection", "01:00": "Sleep"
-      },
-      Wednesday: {
-        "06:00": "Home Office", "07:00": "Lowe's Focus", "17:00": "AI Working Session",
-        "19:00": "Course", "20:00": "Iron5 / Reading", "21:00": "Therapy", "22:00": "Read", "00:00": "Reflection", "01:00": "Sleep"
-      },
-      Thursday: {
-        "06:00": "Tech Hub", "07:00": "Lowe's Focus", "16:00": "Drive",
-        "17:00": "OAT Sales", "19:00": "Course", "20:00": "Barakah Bros", "22:00": "Mentorship", "00:00": "Reflection", "01:00": "Sleep"
-      },
-      Friday: {
-        "06:00": "Mooresville", "07:00": "Lowe's Focus", "13:00": "Jumah Prayer",
-        "17:00": "Dinner", "18:00": "Yaman Time", "20:00": "Barakah Bros", "21:00": "Worship", "00:00": "Reflection", "01:00": "Sleep"
-      },
-      Saturday: {
-        "06:00": "Wake Up", "09:00": "Furniture Installation", "12:00": "Mentorship HW",
-        "14:00": "Connect", "15:00": "Write Articles", "17:00": "Duru Time", "18:00": "Family Time", "20:00": "Family Meeting", "00:00": "Reflection"
-      },
-      Sunday: {
-        "06:00": "Wake Up", "10:00": "Walk", "11:00": "Read", "12:00": "Mentorship HW",
-        "15:00": "Write Articles", "17:00": "Family Dinner", "21:00": "Weekly Ops", "00:00": "Reflection", "01:00": "Sleep"
-      }
+      Monday: { "06:00": "Tech Hub / Wake Up", "07:00": "Lowe's Focus Work", "16:00": "Drive", "17:00": "Yaman's Taekwondo", "19:00": "MMOG/SCM", "20:00": "Mosaic Relief", "21:00": "Mosaic Executives", "00:00": "Reflection", "01:00": "Sleep" },
+      Tuesday: { "06:00": "Home Office", "07:00": "Lowe's Focus Work", "12:00": "Fatih - OAT Session", "17:00": "Yaman's Taekwondo", "18:00": "Book Club", "22:00": "Watch", "00:00": "Reflection", "01:00": "Sleep" },
+      Wednesday: { "06:00": "Home Office", "07:00": "Lowe's Focus Work", "17:00": "AI Working Session", "19:00": "Course", "20:00": "Iron5 / Reading", "21:00": "Therapy", "00:00": "Reflection", "01:00": "Sleep" },
+      Thursday: { "06:00": "Tech Hub", "07:00": "Lowe's Focus Work", "16:00": "Drive", "17:00": "OAT Sales", "19:00": "Course", "20:00": "Barakah Bros", "22:00": "Mentorship", "00:00": "Reflection", "01:00": "Sleep" },
+      Friday: { "06:00": "Mooresville", "07:00": "Lowe's Focus Work", "13:00": "Jumah Prayer", "17:00": "Dinner", "18:00": "Yaman Time", "20:00": "Barakah Bros", "21:00": "Worship", "00:00": "Reflection", "01:00": "Sleep" },
+      Saturday: { "06:00": "Wake Up", "09:00": "Furniture Installation", "12:00": "Mentorship HW", "14:00": "Connect", "15:00": "Write Articles", "17:00": "Duru Time", "18:00": "Family Time", "20:00": "Family Meeting", "00:00": "Reflection" },
+      Sunday: { "06:00": "Wake Up", "10:00": "Walk", "11:00": "Read", "12:00": "Mentorship HW", "15:00": "Write Articles", "17:00": "Family Dinner", "21:00": "Weekly Ops", "00:00": "Reflection", "01:00": "Sleep" }
     };
 
-    // MULTI-WEEK DATASET
+    // MULTI-WEEK DATASET (W32 RESET TO 0% AS WEEK HAS JUST STARTED)
     const MULTI_WEEK_DATA = {
       "W28": { label: "Week 28", score: 32, totalHrs: 104, roles: { Work: 52, Individual: 12, Family: 25, Community: 13, Career: 0, Mentorship: 2 }, okrScores: { "W-LOW": 20, "W-OAT": 20, "H-EXR": 25, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 60 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 20, hrs: 52, krs: ["Mylow vision deck started"] }] },
       "W29": { label: "Week 29", score: 34, totalHrs: 107, roles: { Work: 54, Individual: 15, Family: 19, Community: 15, Career: 2, Mentorship: 2 }, okrScores: { "W-LOW": 22, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 22, hrs: 54, krs: ["Mylow outline drafted"] }] },
@@ -210,21 +152,19 @@
         okrScores: { "W-LOW": 28, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
         okrs: [
           { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 28, hrs: 65, krs: ["Mylow Vision Deck (100% - Done)", "Lowe's 1:1 scheduling initiated"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Direct involvement capped at ~4 hrs", "Fatih OAT meetings done"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 50, hrs: 4, krs: ["Gym sessions executed Thursday/Sunday"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 40, hrs: 14, krs: ["Kids Canada Passport photos & docs done"] }
+          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Direct involvement capped at ~4 hrs"] }
         ]
       },
       "W32": {
-        label: "Week 32 (Current)", score: 50, totalHrs: 105,
-        roles: { Work: 50, Individual: 22, Family: 11, Community: 8, Career: 9, Mentorship: 5 },
-        okrScores: { "W-LOW": 45, "W-OAT": 40, "H-EXR": 75, "WI-WRT": 60, "R-PAR": 60, "S-MOS": 80 },
+        label: "Week 32 (Current - In Progress)", score: 0, totalHrs: 0,
+        roles: { Work: 0, Individual: 0, Family: 0, Community: 0, Career: 0, Mentorship: 0 },
+        okrScores: { "W-LOW": 0, "W-OAT": 0, "H-EXR": 0, "WI-WRT": 0, "R-PAR": 0, "S-MOS": 0 },
         okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 45, hrs: 50, krs: ["Set 1:1 Lowe's leaders (Wendy, Joshua, Chandu)", "MMOG/SCM deliverables"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 40, hrs: 4, krs: ["Fatih OAT session Tuesday 12 PM"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 75, hrs: 4, krs: ["4 workouts scheduled"] },
-          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 60, hrs: 9, krs: ["Course x 3 & Reflection blocks"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 60, hrs: 11, krs: ["Photographer kids photos & Canadian passport"] }
+          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 0, hrs: 0, krs: ["Set 1:1 Lowe's leaders (Wendy, Joshua, Chandu)", "MMOG/SCM deliverables"] },
+          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 0, hrs: 0, krs: ["Fatih OAT session Tuesday 12 PM"] },
+          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 0, hrs: 0, krs: ["4 workouts scheduled"] },
+          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 0, hrs: 0, krs: ["Course x 3 & Reflection blocks"] },
+          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 0, hrs: 0, krs: ["Photographer kids photos & Canadian passport"] }
         ]
       }
     };
@@ -243,7 +183,7 @@
 
         const btn = document.createElement('button');
         btn.className = `px-3 py-1 rounded-lg text-xs border transition-all duration-150 ${btnClass}`;
-        btn.innerText = weekKey === "W32" ? "W32 (Current)" : (weekKey === "W31" ? "W31 (Done)" : weekKey);
+        btn.innerText = weekKey === "W32" ? "W32 (Active)" : (weekKey === "W31" ? "W31 (Done)" : weekKey);
         btn.onclick = () => { selectedWeek = weekKey; initButtons(); renderDashboard(); };
         container.appendChild(btn);
       });
@@ -276,7 +216,7 @@
       document.getElementById('total-hours').innerText = `${weekData.totalHrs} hrs`;
       document.getElementById('active-week-label').innerHTML = `${selectedWeek} <span class="text-xs text-gray-400 font-normal">/ W52</span>`;
 
-      const topRole = Object.entries(weekData.roles).reduce((a, b) => a[1] > b[1] ? a : b);
+      const topRole = Object.entries(weekData.roles).reduce((a, b) => a[1] >= b[1] ? a : b);
       document.getElementById('top-category').innerText = topRole[0];
 
       if (activeTab === 'okr') renderOKRView(weekData);
@@ -400,7 +340,6 @@
       });
     }
 
-    // Dynamic Today & Now Scheduler Engine
     function updateTodaySchedule() {
       const now = new Date();
       const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -445,31 +384,6 @@
       document.getElementById('next-activity').innerText = `Up Next: ${nextTask}`;
     }
 
-    function toggleTodo(el) {
-      const checkbox = el.querySelector('input[type="checkbox"]');
-      checkbox.checked = !checkbox.checked;
-      if (checkbox.checked) {
-        el.classList.add('opacity-40', 'line-through');
-      } else {
-        el.classList.remove('opacity-40', 'line-through');
-      }
-    }
-
-    function openW31SummaryModal() {
-      document.getElementById('modal-content').innerHTML = `
-        <div class="text-xs font-mono text-green-400 uppercase tracking-widest">Completed Week Summary</div>
-        <h2 class="text-xl font-bold text-white mb-2">Week 31 Accomplishments</h2>
-        <div class="bg-gray-900 p-4 rounded-lg border border-gray-700 space-y-2 text-xs text-gray-300">
-          <p>• <strong>Lowe's:</strong> Mylow Vision Deck completed and finalized across Tue/Fri/Sun blocks.</p>
-          <p>• <strong>Family & Logistics:</strong> Kids Canadian Passport documentation sent and photos picked up.</p>
-          <p>• <strong>Community:</strong> Mid-Atlantic Relief deck completed and Relief Directors meeting held.</p>
-          <p>• <strong>Logged Hours:</strong> Work: 65h, Community: 16h, Family: 14h, Individual: 11h, Career: 1h.</p>
-        </div>
-      `;
-      document.getElementById('detail-modal').classList.remove('hidden');
-      document.getElementById('detail-modal').classList.add('flex');
-    }
-
     function openModal(okrId) {
       const weekData = MULTI_WEEK_DATA[selectedWeek];
       const obj = weekData.okrs.find(o => o.id === okrId);
@@ -480,7 +394,7 @@
         <div class="text-xs font-mono text-blue-400 uppercase tracking-widest">${obj.id} — ${obj.domain}</div>
         <h2 class="text-xl font-bold text-white mb-2">${obj.name}</h2>
         <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
-          <div class="text-xs text-gray-400">Current Score: <strong class="text-white text-sm">${obj.score}%</strong></div>
+          <div class="text-xs text-gray-400">Current Completion: <strong class="text-white text-sm">${obj.score}%</strong></div>
         </div>
         <div class="mt-4"><h4 class="text-xs font-bold uppercase text-gray-400 mb-2">Key Result Progress</h4><ul class="space-y-2">${krList}</ul></div>
       `;
@@ -512,7 +426,6 @@
       }, 1000);
     }
 
-    // Init Page
     initButtons();
     renderDashboard();
     startClock();
