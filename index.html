@@ -7,90 +7,185 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen p-6 md:p-10">
+<body class="bg-gray-900 text-gray-100 min-h-screen p-4 md:p-8">
 
-  <div class="max-w-7xl mx-auto space-y-8">
+  <div class="max-w-7xl mx-auto space-y-6">
     
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-6 gap-4">
+    <!-- Top Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-4 gap-4">
       <div>
-        <h1 class="text-3xl font-extrabold text-blue-400 tracking-tight">H2 2026 Dual Dashboard</h1>
-        <p class="text-gray-400 text-sm mt-1">Interactive OKR Progress & Role-Based Time Allocation</p>
+        <h1 class="text-2xl md:text-3xl font-extrabold text-blue-400 tracking-tight">H2 2026 Executive Dashboard</h1>
+        <p class="text-gray-400 text-sm mt-0.5">Compound OKRs, Role Trends & Real-Time Schedule</p>
       </div>
       <div class="flex items-center gap-3">
-        <span class="text-xs text-purple-400 font-semibold bg-purple-950/60 border border-purple-800 px-3.5 py-1.5 rounded-full">📍 Week 32 (Current)</span>
+        <span class="text-xs text-purple-400 font-semibold bg-purple-950/60 border border-purple-800 px-3.5 py-1.5 rounded-full">📍 Week 32 (Current Cycle)</span>
       </div>
     </div>
 
-    <!-- View Switcher & Week Bar -->
-    <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
-      <!-- Perspective Toggle -->
-      <div class="flex bg-gray-900 p-1 rounded-lg border border-gray-700">
-        <button id="btn-view-okr" onclick="switchView('okr')" class="px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white">🎯 OKR Progress View</button>
-        <button id="btn-view-role" onclick="switchView('role')" class="px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white">📊 Role Hours View</button>
+    <!-- View Switcher Tabs -->
+    <div class="bg-gray-800 border border-gray-700/60 p-3 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
+      <!-- Primary Tabs -->
+      <div class="flex bg-gray-900 p-1 rounded-lg border border-gray-700 w-full md:w-auto">
+        <button id="tab-okr" onclick="switchMainTab('okr')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white">🎯 OKR Compound View</button>
+        <button id="tab-role" onclick="switchMainTab('role')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white">📊 Role Hours View</button>
+        <button id="tab-today" onclick="switchMainTab('today')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white bg-purple-950/40 border border-purple-800/50">📅 Today & Now</button>
       </div>
 
-      <!-- Week Buttons -->
-      <div class="flex flex-wrap gap-2" id="week-buttons"></div>
+      <!-- Week Buttons (Visible on OKR & Role Tabs) -->
+      <div class="flex flex-wrap gap-1.5" id="week-buttons"></div>
     </div>
 
-    <!-- Summary Metrics Bar -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Week Score</span>
-        <div id="overall-score" class="text-3xl font-bold text-blue-400 mt-1">--%</div>
-      </div>
-      <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Logged Hours</span>
-        <div id="total-hours" class="text-3xl font-bold text-green-400 mt-1">-- hrs</div>
-      </div>
-      <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Top Time Category</span>
-        <div id="top-category" class="text-3xl font-bold text-gray-200 mt-1">Work</div>
-      </div>
-      <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-        <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Current Cycle</span>
-        <div id="active-week-label" class="text-3xl font-bold text-purple-400 mt-1">W32 <span class="text-xs text-gray-400 font-normal">/ W52</span></div>
-      </div>
-    </div>
+    <!-- MAIN VIEW CONTAINER -->
+    <div id="dashboard-view-container">
 
-    <!-- Chart Section -->
-    <div class="bg-gray-800 border border-gray-700/60 p-6 rounded-xl shadow-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h2 id="chart-title" class="text-lg font-bold text-gray-200">5-Week Execution Progress Trend</h2>
-        <span class="text-xs text-gray-400">Click points/bars to inspect</span>
-      </div>
-      <div class="h-64 relative">
-        <canvas id="mainChart"></canvas>
-      </div>
-    </div>
+      <!-- OKR / ROLE CONTENT VIEW -->
+      <div id="view-analytics" class="space-y-6">
+        <!-- Summary Metrics Bar -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Compound OKR Score</span>
+            <div id="overall-score" class="text-3xl font-bold text-blue-400 mt-1">--%</div>
+          </div>
+          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Logged Hours</span>
+            <div id="total-hours" class="text-3xl font-bold text-green-400 mt-1">-- hrs</div>
+          </div>
+          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Top Priority Category</span>
+            <div id="top-category" class="text-3xl font-bold text-gray-200 mt-1">Work</div>
+          </div>
+          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
+            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Cycle</span>
+            <div id="active-week-label" class="text-3xl font-bold text-purple-400 mt-1">W32 <span class="text-xs text-gray-400 font-normal">/ W52</span></div>
+          </div>
+        </div>
 
-    <!-- Dynamic Scorecards Grid -->
-    <div>
-      <h2 class="text-xl font-bold text-gray-200 mb-4" id="cards-title">Objectives & Key Results</h2>
-      <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <!-- Chart Section -->
+        <div class="bg-gray-800 border border-gray-700/60 p-6 rounded-xl shadow-lg">
+          <div class="flex justify-between items-center mb-4">
+            <h2 id="chart-title" class="text-lg font-bold text-gray-200">Compound OKR Execution Trends</h2>
+            <span class="text-xs text-gray-400">Hover datasets to inspect</span>
+          </div>
+          <div class="h-72 relative">
+            <canvas id="mainChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Dynamic Cards Grid -->
+        <div>
+          <h2 class="text-xl font-bold text-gray-200 mb-4" id="cards-title">Objectives Breakdown</h2>
+          <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+      </div>
+
+      <!-- TODAY & NOW TAB VIEW (Initially Hidden) -->
+      <div id="view-today" class="space-y-6 hidden">
+        <!-- Live Time & Current Status Banner -->
+        <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-gray-800 border border-blue-700/50 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
+          <div>
+            <span class="text-xs font-mono uppercase tracking-widest text-purple-300">Live Daily Context</span>
+            <h2 class="text-3xl font-extrabold text-white mt-1" id="live-clock">--:--:--</h2>
+            <p class="text-gray-300 text-sm mt-1" id="live-date">Loading date...</p>
+          </div>
+          <div class="bg-gray-900/80 border border-purple-500/30 p-4 rounded-xl text-right max-w-sm w-full">
+            <span class="text-xs text-gray-400 uppercase font-bold tracking-wider block">Suggested Current Activity</span>
+            <span id="current-activity" class="text-lg font-bold text-green-400 block mt-0.5">Calculating schedule...</span>
+            <span id="next-activity" class="text-xs text-gray-400 mt-1 block">Next: --</span>
+          </div>
+        </div>
+
+        <!-- Today's Strategic Priorities & Time Schedule -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Priorities Column (2 cols) -->
+          <div class="lg:col-span-2 space-y-4">
+            <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
+              <span>🎯 Today's Strategic Focus Areas</span>
+            </h3>
+
+            <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Lowe's Principal PM [W-LOW]</span>
+                <span class="text-xs text-yellow-400 font-semibold">High Priority</span>
+              </div>
+              <h4 class="font-bold text-white text-base">Schedule 2 Senior Leader 1:1 Meetings</h4>
+              <p class="text-xs text-gray-400">Send calendar invite to Chandu and finalize prep notes for Wendy Williams.</p>
+            </div>
+
+            <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-green-400 uppercase tracking-wider">Health & Fitness [H-EXR]</span>
+                <span class="text-xs text-green-400 font-semibold">Habit</span>
+              </div>
+              <h4 class="font-bold text-white text-base">Evening Gym / Mobility Session</h4>
+              <p class="text-xs text-gray-400">45 mins strength & back mobility exercise before 8:00 PM.</p>
+            </div>
+
+            <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">Family [R-PAR]</span>
+                <span class="text-xs text-purple-400 font-semibold">Non-Negotiable</span>
+              </div>
+              <h4 class="font-bold text-white text-base">Duru Driving School Application & Yaman Taekwondo</h4>
+              <p class="text-xs text-gray-400">Complete online application and prepare kids documentation.</p>
+            </div>
+          </div>
+
+          <!-- Daily Schedule Checklist (1 col) -->
+          <div class="bg-gray-800 border border-gray-700/80 p-5 rounded-xl space-y-4">
+            <h3 class="text-base font-bold text-gray-200 border-b border-gray-700 pb-2">Ideal Time Schedule</h3>
+            <div class="space-y-3 text-xs text-gray-300">
+              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
+                <span>06:00 - 07:00 AM</span>
+                <span class="font-semibold text-blue-400">Office / Morning Prep</span>
+              </div>
+              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
+                <span>07:00 - 04:00 PM</span>
+                <span class="font-semibold text-blue-300">Lowe's Focus Work</span>
+              </div>
+              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
+                <span>04:00 - 05:00 PM</span>
+                <span class="font-semibold text-purple-300">Family & Logistics</span>
+              </div>
+              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
+                <span>05:00 - 07:00 PM</span>
+                <span class="font-semibold text-green-300">Gym & Yaman Activity</span>
+              </div>
+              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
+                <span>07:00 - 09:00 PM</span>
+                <span class="font-semibold text-yellow-300">Courses & Personal OKRs</span>
+              </div>
+              <div class="flex justify-between items-center bg-gray-900/60 p-2.5 rounded border border-gray-700/50">
+                <span>09:00 - 11:00 PM</span>
+                <span class="font-semibold text-gray-400">Reflection & Wind Down</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </div>
 
-  <!-- Detail Modal for Interactive Click -->
-  <div id="detail-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm">
-    <div class="bg-gray-800 border border-gray-700 p-6 rounded-xl max-w-lg w-full space-y-4 relative shadow-2xl">
-      <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white font-bold text-lg">✕</button>
+  <!-- Detail Modal (Closes on click anywhere) -->
+  <div id="detail-modal" onclick="closeModal()" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm cursor-pointer">
+    <div onclick="event.stopPropagation(); closeModal();" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl max-w-lg w-full space-y-4 shadow-2xl relative">
+      <div class="text-right text-xs text-gray-400 underline mb-2">Click anywhere to close</div>
       <div id="modal-content"></div>
     </div>
   </div>
 
   <script>
-    let currentView = 'okr'; // 'okr' or 'role'
+    let activeTab = 'okr'; // 'okr', 'role', or 'today'
     let selectedWeek = 'W32';
     let chartInstance = null;
 
-    // DATASET (OKR & ROLE HOURS)
+    // MULTI-WEEK DATASET WITH INDIVIDUAL OKR HISTORIES
     const MULTI_WEEK_DATA = {
       "W28": {
         label: "Week 28", score: 32, totalHrs: 104,
         roles: { Work: 52, Individual: 12, Family: 25, Community: 13, Career: 0, Mentorship: 2 },
+        okrScores: { "W-LOW": 20, "W-OAT": 20, "H-EXR": 25, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 60 },
         okrs: [
           { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 20, hrs: 52, krs: ["Mylow vision deck started", "1:1 Strategy initialized"] },
           { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 20, hrs: 4, krs: ["Delivery review pending"] },
@@ -103,6 +198,7 @@
       "W29": {
         label: "Week 29", score: 34, totalHrs: 107,
         roles: { Work: 54, Individual: 15, Family: 19, Community: 15, Career: 2, Mentorship: 2 },
+        okrScores: { "W-LOW": 22, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
         okrs: [
           { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 22, hrs: 54, krs: ["Mylow outline drafted", "1:1 list finalized"] },
           { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Capped hours at 4h"] },
@@ -115,6 +211,7 @@
       "W30": {
         label: "Week 30", score: 36, totalHrs: 107,
         roles: { Work: 52, Individual: 17, Family: 19, Community: 15, Career: 4, Mentorship: 0 },
+        okrScores: { "W-LOW": 25, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
         okrs: [
           { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 25, hrs: 52, krs: ["Mylow deck 70% complete", "LinkedIn post drafted"] },
           { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Direct involvement kept low"] },
@@ -127,6 +224,7 @@
       "W31": {
         label: "Week 31", score: 38, totalHrs: 107,
         roles: { Work: 65, Individual: 11, Family: 14, Community: 16, Career: 1, Mentorship: 0 },
+        okrScores: { "W-LOW": 28, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
         okrs: [
           { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 28, hrs: 65, krs: ["Present Mylow vision deck (100% - Done)", "Complete 1:1s with 5 leaders (20% - 1/5)", "Publish 8 LinkedIn posts (12% - 1/8)"] },
           { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Cap involvement at 4h/wk (100% - On track)", "Fatih strategy meetings held (50%)"] },
@@ -139,6 +237,7 @@
       "W32": {
         label: "Week 32 (Current)", score: 52, totalHrs: 105,
         roles: { Work: 50, Individual: 22, Family: 11, Community: 8, Career: 9, Mentorship: 5 },
+        okrScores: { "W-LOW": 45, "W-OAT": 40, "H-EXR": 75, "WI-WRT": 60, "R-PAR": 60, "S-MOS": 80 },
         okrs: [
           { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 45, hrs: 50, krs: ["Schedule 2 senior 1:1s", "Publish 2nd LinkedIn post", "Write Mylow strategy narrative"] },
           { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 40, hrs: 4, krs: ["Finalize delivery ownership document"] },
@@ -157,30 +256,40 @@
       Object.keys(MULTI_WEEK_DATA).forEach(weekKey => {
         const isCurrent = weekKey === selectedWeek;
         let btnClass = isCurrent 
-          ? "bg-blue-600 text-white font-bold border-blue-500 shadow-lg scale-105" 
+          ? "bg-blue-600 text-white font-bold border-blue-500 shadow scale-105" 
           : "bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium border-gray-600";
 
         if (weekKey === "W32") btnClass += " border-2 border-purple-400";
 
         const btn = document.createElement('button');
-        btn.className = `px-3 py-1.5 rounded-lg text-xs border transition-all duration-150 ${btnClass}`;
+        btn.className = `px-3 py-1 rounded-lg text-xs border transition-all duration-150 ${btnClass}`;
         btn.innerText = weekKey === "W32" ? "W32 (Current)" : weekKey;
         btn.onclick = () => { selectedWeek = weekKey; initButtons(); renderDashboard(); };
         container.appendChild(btn);
       });
     }
 
-    function switchView(view) {
-      currentView = view;
-      document.getElementById('btn-view-okr').className = view === 'okr' 
-        ? "px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white" 
-        : "px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white";
+    function switchMainTab(tab) {
+      activeTab = tab;
+      ['okr', 'role', 'today'].forEach(t => {
+        const el = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+          el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white";
+        } else {
+          el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white";
+        }
+      });
 
-      document.getElementById('btn-view-role').className = view === 'role' 
-        ? "px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white" 
-        : "px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white";
-
-      renderDashboard();
+      if (tab === 'today') {
+        document.getElementById('view-analytics').classList.add('hidden');
+        document.getElementById('view-today').classList.remove('hidden');
+        document.getElementById('week-buttons').classList.add('hidden');
+      } else {
+        document.getElementById('view-analytics').classList.remove('hidden');
+        document.getElementById('view-today').classList.add('hidden');
+        document.getElementById('week-buttons').classList.remove('hidden');
+        renderDashboard();
+      }
     }
 
     function renderDashboard() {
@@ -190,30 +299,26 @@
       document.getElementById('total-hours').innerText = `${weekData.totalHrs} hrs`;
       document.getElementById('active-week-label').innerHTML = `${selectedWeek} <span class="text-xs text-gray-400 font-normal">/ W52</span>`;
 
-      // Find top role category
       const topRole = Object.entries(weekData.roles).reduce((a, b) => a[1] > b[1] ? a : b);
       document.getElementById('top-category').innerText = topRole[0];
 
-      if (currentView === 'okr') {
-        renderOKRView(weekData);
-      } else {
-        renderRoleView(weekData);
-      }
+      if (activeTab === 'okr') renderOKRView(weekData);
+      else if (activeTab === 'role') renderRoleView(weekData);
     }
 
     function renderOKRView(weekData) {
-      document.getElementById('chart-title').innerText = "OKR Completion Score Trend (%)";
-      document.getElementById('cards-title').innerText = `${weekData.label} — OKR Breakdown (Click for details)`;
+      document.getElementById('chart-title').innerText = "Compound & Individual OKR Execution Trends (%)";
+      document.getElementById('cards-title').innerText = `${weekData.label} — OKR Objectives (Click any card to view)`;
 
       const grid = document.getElementById('cards-grid');
       grid.innerHTML = '';
 
-      weekData.okrs.forEach((obj, idx) => {
+      weekData.okrs.forEach((obj) => {
         let badgeColor = obj.score >= 70 ? 'bg-green-500/20 text-green-400 border-green-500/30' : (obj.score >= 40 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30');
         let barColor = obj.score >= 70 ? 'bg-green-500' : (obj.score >= 40 ? 'bg-yellow-500' : 'bg-red-500');
 
         const card = `
-          <div onclick="openModal('${obj.id}')" class="bg-gray-800 border border-gray-700/70 p-5 rounded-xl shadow-md cursor-pointer hover:border-blue-500 hover:scale-[1.01] transition">
+          <div onclick="openModal('${obj.id}')" class="bg-gray-800 border border-gray-700/70 p-5 rounded-xl shadow cursor-pointer hover:border-blue-500 hover:scale-[1.01] transition">
             <div class="flex items-center justify-between mb-3">
               <span class="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 px-2.5 py-1 rounded border border-blue-800/50">${obj.domain}</span>
               <span class="text-xs font-bold px-2.5 py-0.5 rounded border ${badgeColor}">${obj.score}%</span>
@@ -224,26 +329,26 @@
               <div class="${barColor} h-full transition-all duration-500" style="width: ${obj.score}%"></div>
             </div>
             <div class="text-xs text-gray-400 border-t border-gray-700/50 pt-3">
-              <strong>Key Results:</strong> ${obj.krs.length} tracked. <span class="text-blue-400 underline">Click to inspect →</span>
+              <strong>Key Results:</strong> ${obj.krs.length} tracked. <span class="text-blue-400 underline">Inspect details →</span>
             </div>
           </div>
         `;
         grid.innerHTML += card;
       });
 
-      renderOKRChart();
+      renderCompoundOKRChart();
     }
 
     function renderRoleView(weekData) {
-      document.getElementById('chart-title').innerText = "Role Hours Trend (Work, Family, Health, Community)";
-      document.getElementById('cards-title').innerText = `${weekData.label} — Role Hours Allocation (Click for details)`;
+      document.getElementById('chart-title').innerText = "Role Hours Allocation Trends";
+      document.getElementById('cards-title').innerText = `${weekData.label} — Role Hours Breakdown`;
 
       const grid = document.getElementById('cards-grid');
       grid.innerHTML = '';
 
       Object.entries(weekData.roles).forEach(([role, hrs]) => {
         const card = `
-          <div onclick="openRoleModal('${role}', ${hrs})" class="bg-gray-800 border border-gray-700/70 p-5 rounded-xl shadow-md cursor-pointer hover:border-purple-500 hover:scale-[1.01] transition">
+          <div onclick="openRoleModal('${role}', ${hrs})" class="bg-gray-800 border border-gray-700/70 p-5 rounded-xl shadow cursor-pointer hover:border-purple-500 hover:scale-[1.01] transition">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold uppercase text-purple-400 bg-purple-950/60 px-2.5 py-1 rounded border border-purple-800/50">Role Category</span>
               <span class="text-lg font-bold text-green-400">${hrs} hrs</span>
@@ -260,28 +365,47 @@
       renderRoleChart();
     }
 
-    function renderOKRChart() {
+    // COMPOUND OKR MULTI-LINE CHART
+    function renderCompoundOKRChart() {
       const ctx = document.getElementById('mainChart').getContext('2d');
       if (chartInstance) chartInstance.destroy();
 
       const weekKeys = Object.keys(MULTI_WEEK_DATA);
-      const scores = weekKeys.map(k => MULTI_WEEK_DATA[k].score);
+      const okrList = ["W-LOW", "W-OAT", "H-EXR", "WI-WRT", "R-PAR", "S-MOS"];
+      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#6366F1'];
+
+      // Compound Average Line
+      const compoundLine = {
+        label: '⚡ Compound Overall Average',
+        data: weekKeys.map(k => MULTI_WEEK_DATA[k].score),
+        borderColor: '#FFFFFF',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        borderWidth: 4,
+        tension: 0.3,
+        pointRadius: 6,
+        fill: true
+      };
+
+      // Individual OKR Lines
+      const individualLines = okrList.map((id, idx) => ({
+        label: id,
+        data: weekKeys.map(k => (MULTI_WEEK_DATA[k].okrScores && MULTI_WEEK_DATA[k].okrScores[id]) || 0),
+        borderColor: colors[idx],
+        borderWidth: 2,
+        tension: 0.3,
+        borderDash: [4, 4]
+      }));
 
       chartInstance = new Chart(ctx, {
         type: 'line',
-        data: {
-          labels: weekKeys.map(k => MULTI_WEEK_DATA[k].label),
-          datasets: [{
-            label: 'Overall OKR Progress %',
-            data: scores,
-            borderColor: '#3B82F6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            fill: true,
-            tension: 0.3,
-            borderWidth: 3
-          }]
-        },
-        options: { responsive: true, maintainAspectRatio: false }
+        data: { labels: weekKeys.map(k => MULTI_WEEK_DATA[k].label), datasets: [compoundLine, ...individualLines] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          scales: {
+            y: { beginAtZero: true, max: 100, grid: { color: '#374151' } },
+            x: { grid: { display: false } }
+          }
+        }
       });
     }
 
@@ -320,7 +444,7 @@
         <h2 class="text-xl font-bold text-white mb-2">${obj.name}</h2>
         <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
           <div class="text-xs text-gray-400">Current Score: <strong class="text-white text-sm">${obj.score}%</strong></div>
-          <div class="text-xs text-gray-400 mt-1">Hours Logged This Week: <strong class="text-green-400 text-sm">${obj.hrs} hrs</strong></div>
+          <div class="text-xs text-gray-400 mt-1">Logged Hours: <strong class="text-green-400 text-sm">${obj.hrs} hrs</strong></div>
         </div>
         <div class="mt-4">
           <h4 class="text-xs font-bold uppercase text-gray-400 mb-2">Key Result Progress</h4>
@@ -349,9 +473,32 @@
       document.getElementById('detail-modal').classList.remove('flex');
     }
 
-    // Init
+    // Live Clock & Schedule Engine
+    function startClock() {
+      setInterval(() => {
+        const now = new Date();
+        document.getElementById('live-clock').innerText = now.toLocaleTimeString();
+        document.getElementById('live-date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+        const hr = now.getHours();
+        let current = "Personal & Family Time";
+        let next = "Night Reflection & Sleep";
+
+        if (hr >= 6 && hr < 7) { current = "Morning Prep & Tech Hub"; next = "Lowe's Focus Block"; }
+        else if (hr >= 7 && hr < 16) { current = "Lowe's Work & Meetings"; next = "Family Logistics & Gym"; }
+        else if (hr >= 16 && hr < 18) { current = "Family / Yaman Taekwondo"; next = "Evening Workout"; }
+        else if (hr >= 18 && hr < 20) { current = "Gym & Back Mobility"; next = "Personal OKR / Course Block"; }
+        else if (hr >= 20 && hr < 22) { current = "Course Work & Reflection"; next = "Wind Down & Sleep"; }
+
+        document.getElementById('current-activity').innerText = current;
+        document.getElementById('next-activity').innerText = `Next: ${next}`;
+      }, 1000);
+    }
+
+    // Init Page
     initButtons();
     renderDashboard();
+    startClock();
   </script>
 </body>
 </html>
