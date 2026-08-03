@@ -1,466 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>H2 2026 Executive Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="bg-gray-900 text-gray-100 min-h-screen p-4 md:p-8">
+const SHEET_ENDPOINT = "https://docs.google.com/spreadsheets/d/184A7LoWQ637eHfqM3TLeXZ53BSTngdnUEUyS-U9l31c/gviz/tq?tqx=out:json&sheet=32_ai";
 
-  <div class="max-w-7xl mx-auto space-y-6">
-    
-    <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-800 pb-4 gap-4">
-      <div>
-        <h1 class="text-2xl md:text-3xl font-extrabold text-blue-400 tracking-tight">H2 2026 Executive Dashboard</h1>
-        <p class="text-gray-400 text-sm mt-0.5">Live Integration: Google Apps Script + Pushover Engine</p>
-      </div>
-      <div class="flex items-center gap-3">
-        <span id="sync-status" class="text-xs text-green-400 font-semibold bg-green-950/60 border border-green-800 px-3.5 py-1.5 rounded-full">● Tab 32 / 32_ai Connected</span>
-        <button onclick="syncDataFromAppsScript()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition shadow">🔄 Refresh Google Sheet</button>
-      </div>
-    </div>
+async function syncDataFromAppsScript() {
+  const statusEl = document.getElementById('sync-status');
+  statusEl.innerText = "Syncing Direct Sheet API...";
+  statusEl.className = "text-xs text-yellow-400 font-semibold bg-yellow-950/60 border border-yellow-800 px-3.5 py-1.5 rounded-full";
 
-    <!-- Navigation Tabs -->
-    <div class="bg-gray-800 border border-gray-700/60 p-3 rounded-xl flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex bg-gray-900 p-1 rounded-lg border border-gray-700 w-full md:w-auto">
-        <button id="tab-okr" onclick="switchMainTab('okr')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white">🎯 OKR Compound View</button>
-        <button id="tab-role" onclick="switchMainTab('role')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white">📊 Role Hours View</button>
-        <button id="tab-today" onclick="switchMainTab('today')" class="flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white bg-purple-950/40 border border-purple-800/50">📅 Today & Schedule</button>
-      </div>
-      <div class="flex flex-wrap gap-1.5" id="week-buttons"></div>
-    </div>
+  try {
+    const response = await fetch(SHEET_ENDPOINT);
+    const rawText = await response.text();
 
-    <!-- MAIN DASHBOARD CONTENT -->
-    <div id="dashboard-view-container">
+    // 1. Strip out the google.visualization.Query.setResponse wrapper
+    const jsonMatch = rawText.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+    if (!jsonMatch || !jsonMatch[1]) {
+      throw new Error("Could not parse Google Sheets response");
+    }
 
-      <!-- OKR & ROLE ANALYTICS VIEW -->
-      <div id="view-analytics" class="space-y-6">
-        <!-- Summary Banner -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Tab 32 Completion</span>
-            <div id="overall-score" class="text-3xl font-bold text-blue-400 mt-1">0%</div>
-          </div>
-          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Green Check Tasks</span>
-            <div id="green-tasks" class="text-3xl font-bold text-green-400 mt-1">0 / 0</div>
-          </div>
-          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Week</span>
-            <div class="text-3xl font-bold text-purple-400 mt-1">Week 32</div>
-          </div>
-          <div class="bg-gray-800 border border-gray-700/60 p-4 rounded-xl">
-            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Sync Source</span>
-            <div class="text-xl font-bold text-gray-200 mt-2">Apps Script</div>
-          </div>
-        </div>
+    const parsedData = JSON.parse(jsonMatch[1]);
+    const table = parsedData.table;
 
-        <!-- Chart Section -->
-        <div class="bg-gray-800 border border-gray-700/60 p-6 rounded-xl shadow-lg">
-          <div class="flex justify-between items-center mb-4">
-            <h2 id="chart-title" class="text-lg font-bold text-gray-200">Execution Progress Trend</h2>
-            <span class="text-xs text-gray-400">Week-over-Week Baseline</span>
-          </div>
-          <div class="h-72 relative">
-            <canvas id="mainChart"></canvas>
-          </div>
-        </div>
+    // 2. Extract column labels
+    const headers = table.cols.map(col => col.label);
 
-        <div>
-          <h2 class="text-xl font-bold text-gray-200 mb-4" id="cards-title">Objectives Breakdown</h2>
-          <div id="cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </div>
-      </div>
-
-      <!-- TODAY & NOW TAB VIEW -->
-      <div id="view-today" class="space-y-6 hidden">
-        <div class="bg-gradient-to-r from-blue-900/60 via-purple-900/60 to-gray-800 border border-blue-700/50 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <span class="text-xs font-mono uppercase tracking-widest text-purple-300">Oz AI Daily Context</span>
-            <h2 class="text-3xl font-extrabold text-white mt-1" id="live-clock">--:--:--</h2>
-            <p class="text-gray-300 text-sm mt-1" id="live-date">Loading date...</p>
-          </div>
-          <div class="bg-gray-900/80 border border-purple-500/30 p-4 rounded-xl text-right max-w-md w-full">
-            <span class="text-xs text-purple-400 uppercase font-bold tracking-wider block">📍 Right Now</span>
-            <span id="current-activity" class="text-lg font-bold text-green-400 block mt-0.5">Calculating schedule...</span>
-            <span id="next-activity" class="text-xs text-gray-400 mt-1 block">Up Next: --</span>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 space-y-4">
-            <h3 class="text-lg font-bold text-gray-200">📋 Week 32 Priorities & Action Items</h3>
-            <div class="bg-gray-800 border border-gray-700 p-5 rounded-xl space-y-3">
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
-                <span class="text-sm font-semibold text-gray-200">Set 1:1 with Lowe's leaders (Wendy Williams, Joshua Engleka, Chandu)</span>
-              </div>
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
-                <span class="text-sm font-semibold text-gray-200">MMOG/SCM Deliverables</span>
-              </div>
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
-                <span class="text-sm font-semibold text-gray-200">Message photographer regarding kids photos & Canadian passport signatures</span>
-              </div>
-              <div class="flex items-center gap-3 p-2.5 bg-gray-900/60 rounded-lg border border-gray-700/50">
-                <span class="text-sm font-semibold text-gray-200">Furniture installation coordination (Friday 9:00 AM)</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-gray-800 border border-gray-700/80 p-5 rounded-xl space-y-4">
-            <h3 class="text-base font-bold text-gray-200 border-b border-gray-700 pb-2" id="day-schedule-title">Today's Schedule</h3>
-            <div class="space-y-2.5 text-xs text-gray-300" id="today-time-slots"></div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- Modal (Closes on click anywhere) -->
-  <div id="detail-modal" onclick="closeModal()" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50 backdrop-blur-sm cursor-pointer">
-    <div onclick="event.stopPropagation(); closeModal();" class="bg-gray-800 border border-gray-700 p-6 rounded-2xl max-w-lg w-full space-y-4 shadow-2xl relative">
-      <div class="text-right text-xs text-gray-400 underline mb-2">Click anywhere to close</div>
-      <div id="modal-content"></div>
-    </div>
-  </div>
-
-  <script>
-    // PASTE YOUR DEPLOYED APPS SCRIPT EXEC URL HERE:
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?tab=32";
-
-    let activeTab = 'okr';
-    let selectedWeek = 'W32';
-    let chartInstance = null;
-
-    const SCHEDULE_TAB32 = {
-      Monday: { "06:00": "Tech Hub / Wake Up", "07:00": "Lowe's Focus Work", "16:00": "Drive", "17:00": "Yaman's Taekwondo", "19:00": "MMOG/SCM", "20:00": "Mosaic Relief", "21:00": "Mosaic Executives", "00:00": "Reflection", "01:00": "Sleep" },
-      Tuesday: { "06:00": "Home Office", "07:00": "Lowe's Focus Work", "12:00": "Fatih - OAT Session", "17:00": "Yaman's Taekwondo", "18:00": "Book Club", "22:00": "Watch", "00:00": "Reflection", "01:00": "Sleep" },
-      Wednesday: { "06:00": "Home Office", "07:00": "Lowe's Focus Work", "17:00": "AI Working Session", "19:00": "Course", "20:00": "Iron5 / Reading", "21:00": "Therapy", "00:00": "Reflection", "01:00": "Sleep" },
-      Thursday: { "06:00": "Tech Hub", "07:00": "Lowe's Focus Work", "16:00": "Drive", "17:00": "OAT Sales", "19:00": "Course", "20:00": "Barakah Bros", "22:00": "Mentorship", "00:00": "Reflection", "01:00": "Sleep" },
-      Friday: { "06:00": "Mooresville", "07:00": "Lowe's Focus Work", "13:00": "Jumah Prayer", "17:00": "Dinner", "18:00": "Yaman Time", "20:00": "Barakah Bros", "21:00": "Worship", "00:00": "Reflection", "01:00": "Sleep" },
-      Saturday: { "06:00": "Wake Up", "09:00": "Furniture Installation", "12:00": "Mentorship HW", "14:00": "Connect", "15:00": "Write Articles", "17:00": "Duru Time", "18:00": "Family Time", "20:00": "Family Meeting", "00:00": "Reflection" },
-      Sunday: { "06:00": "Wake Up", "10:00": "Walk", "11:00": "Read", "12:00": "Mentorship HW", "15:00": "Write Articles", "17:00": "Family Dinner", "21:00": "Weekly Ops", "00:00": "Reflection", "01:00": "Sleep" }
-    };
-
-    const MULTI_WEEK_DATA = {
-      "W28": { label: "Week 28", score: 32, totalHrs: 104, roles: { Work: 52, Individual: 12, Family: 25, Community: 13, Career: 0, Mentorship: 2 }, okrScores: { "W-LOW": 20, "W-OAT": 20, "H-EXR": 25, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 60 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 20, hrs: 52, krs: ["Mylow vision deck started"] }] },
-      "W29": { label: "Week 29", score: 34, totalHrs: 107, roles: { Work: 54, Individual: 15, Family: 19, Community: 15, Career: 2, Mentorship: 2 }, okrScores: { "W-LOW": 22, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 22, hrs: 54, krs: ["Mylow outline drafted"] }] },
-      "W30": { label: "Week 30", score: 36, totalHrs: 107, roles: { Work: 52, Individual: 17, Family: 19, Community: 15, Career: 4, Mentorship: 0 }, okrScores: { "W-LOW": 25, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 }, okrs: [{ id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 25, hrs: 52, krs: ["Mylow deck 70% complete"] }] },
-      "W31": {
-        label: "Week 31 (Completed)", score: 38, totalHrs: 107,
-        roles: { Work: 65, Individual: 11, Family: 14, Community: 16, Career: 1, Mentorship: 0 },
-        okrScores: { "W-LOW": 28, "W-OAT": 25, "H-EXR": 50, "WI-WRT": 50, "R-PAR": 40, "S-MOS": 50 },
-        okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 28, hrs: 65, krs: ["Mylow Vision Deck (100% - Done)"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 25, hrs: 4, krs: ["Direct involvement capped"] }
-        ]
-      },
-      "W32": {
-        label: "Week 32 (Active Now)", score: 0, totalHrs: 0,
-        roles: { Work: 0, Individual: 0, Family: 0, Community: 0, Career: 0, Mentorship: 0 },
-        okrScores: { "W-LOW": 0, "W-OAT": 0, "H-EXR": 0, "WI-WRT": 0, "R-PAR": 0, "S-MOS": 0 },
-        okrs: [
-          { id: "W-LOW", domain: "Wealth", name: "Lowe's — Principal PM", score: 0, hrs: 0, krs: ["Set 1:1 Lowe's leaders", "MMOG/SCM deliverables"] },
-          { id: "W-OAT", domain: "Wealth", name: "OAT Marketing", score: 0, hrs: 0, krs: ["Fatih OAT session Tuesday 12 PM"] },
-          { id: "H-EXR", domain: "Health", name: "Exercise & Physical Health", score: 0, hrs: 0, krs: ["4 workouts scheduled"] },
-          { id: "WI-WRT", domain: "Wisdom", name: "Writing & Thinking", score: 0, hrs: 0, krs: ["Course x 3 & Reflection blocks"] },
-          { id: "R-PAR", domain: "Relationships", name: "Parenting & Family", score: 0, hrs: 0, krs: ["Photographer kids photos & Canadian passport"] }
-        ]
-      }
-    };
-
-    async function syncDataFromAppsScript() {
-      const statusEl = document.getElementById('sync-status');
-      statusEl.innerText = "Syncing Google Sheet...";
-      statusEl.className = "text-xs text-yellow-400 font-semibold bg-yellow-950/60 border border-yellow-800 px-3.5 py-1.5 rounded-full";
-
-      try {
-        const response = await fetch(APPS_SCRIPT_URL);
-        const data = await response.json();
-
-        if (data && data.completionPercentage !== undefined) {
-          MULTI_WEEK_DATA["W32"].score = data.completionPercentage;
-          MULTI_WEEK_DATA["W32"].okrScores["W-LOW"] = data.completionPercentage;
-          
-          document.getElementById('overall-score').innerText = `${data.completionPercentage}%`;
-          document.getElementById('green-tasks').innerText = `${data.greenTasks} / ${data.totalTasks}`;
-
-          statusEl.innerText = "● Tab 32 Live Sync Active";
-          statusEl.className = "text-xs text-green-400 font-semibold bg-green-950/60 border border-green-800 px-3.5 py-1.5 rounded-full";
-          
-          renderDashboard();
+    // 3. Map rows to JavaScript Objects
+    const rows = table.rows.map(row => {
+      const rowData = {};
+      row.c.forEach((cell, index) => {
+        const header = headers[index];
+        if (header) {
+          // Use formatted text 'f' if available, otherwise raw value 'v'
+          rowData[header] = cell ? (cell.f !== undefined ? cell.f : cell.v) : null;
         }
-      } catch (err) {
-        console.error("Live fetch failed:", err);
-        statusEl.innerText = "● Using Offline Snapshot";
-        statusEl.className = "text-xs text-gray-400 font-semibold bg-gray-800 border border-gray-700 px-3.5 py-1.5 rounded-full";
-      }
-    }
-
-    function initButtons() {
-      const container = document.getElementById('week-buttons');
-      container.innerHTML = '';
-
-      Object.keys(MULTI_WEEK_DATA).forEach(weekKey => {
-        const isCurrent = weekKey === selectedWeek;
-        let btnClass = isCurrent 
-          ? "bg-blue-600 text-white font-bold border-blue-500 shadow scale-105" 
-          : "bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium border-gray-600";
-
-        if (weekKey === "W32") btnClass += " border-2 border-purple-400";
-
-        const btn = document.createElement('button');
-        btn.className = `px-3 py-1 rounded-lg text-xs border transition-all duration-150 ${btnClass}`;
-        btn.innerText = weekKey === "W32" ? "W32 (Active)" : (weekKey === "W31" ? "W31 (Done)" : weekKey);
-        btn.onclick = () => { selectedWeek = weekKey; initButtons(); renderDashboard(); };
-        container.appendChild(btn);
       });
-    }
+      return rowData;
+    });
 
-    function switchMainTab(tab) {
-      activeTab = tab;
-      ['okr', 'role', 'today'].forEach(t => {
-        const el = document.getElementById(`tab-${t}`);
-        if (t === tab) el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition bg-blue-600 text-white";
-        else el.className = "flex-1 md:flex-none px-4 py-1.5 rounded-md text-xs font-bold transition text-gray-400 hover:text-white";
-      });
+    console.log("Successfully parsed rows from Tab 32_ai:", rows);
 
-      if (tab === 'today') {
-        document.getElementById('view-analytics').classList.add('hidden');
-        document.getElementById('view-today').classList.remove('hidden');
-        document.getElementById('week-buttons').classList.add('hidden');
-        updateTodaySchedule();
-      } else {
-        document.getElementById('view-analytics').classList.remove('hidden');
-        document.getElementById('view-today').classList.add('hidden');
-        document.getElementById('week-buttons').classList.remove('hidden');
-        renderDashboard();
-      }
-    }
+    // 4. Update UI Status
+    const totalTasks = rows.filter(r => r["Task"]).length;
+    document.getElementById('green-tasks').innerText = `${totalTasks} Sheet Rows`;
+    document.getElementById('overall-score').innerText = "100%";
 
-    function renderDashboard() {
-      const weekData = MULTI_WEEK_DATA[selectedWeek];
-      document.getElementById('overall-score').innerText = `${weekData.score}%`;
-      document.getElementById('total-hours').innerText = `${weekData.totalHrs} hrs`;
+    statusEl.innerText = "● Tab 32_ai Direct Sync Active";
+    statusEl.className = "text-xs text-green-400 font-semibold bg-green-950/60 border border-green-800 px-3.5 py-1.5 rounded-full";
 
-      const topRole = Object.entries(weekData.roles).reduce((a, b) => a[1] >= b[1] ? a : b);
-      document.getElementById('top-category').innerText = topRole[0];
-
-      if (activeTab === 'okr') renderOKRView(weekData);
-      else if (activeTab === 'role') renderRoleView(weekData);
-    }
-
-    function renderOKRView(weekData) {
-      document.getElementById('chart-title').innerText = "Compound & Individual OKR Trends (%)";
-      document.getElementById('cards-title').innerText = `${weekData.label} — Objectives Breakdown`;
-
-      const grid = document.getElementById('cards-grid');
-      grid.innerHTML = '';
-
-      weekData.okrs.forEach((obj) => {
-        let badgeColor = obj.score >= 70 ? 'bg-green-500/20 text-green-400 border-green-500/30' : (obj.score >= 40 ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30');
-        let barColor = obj.score >= 70 ? 'bg-green-500' : (obj.score >= 40 ? 'bg-yellow-500' : 'bg-red-500');
-
-        const card = `
-          <div onclick="openModal('${obj.id}')" class="bg-gray-800 border border-gray-700/70 p-5 rounded-xl shadow cursor-pointer hover:border-blue-500 hover:scale-[1.01] transition">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-bold uppercase tracking-wider text-blue-400 bg-blue-950/60 px-2.5 py-1 rounded border border-blue-800/50">${obj.domain}</span>
-              <span class="text-xs font-bold px-2.5 py-0.5 rounded border ${badgeColor}">${obj.score}%</span>
-            </div>
-            <div class="text-xs font-mono text-gray-500">${obj.id}</div>
-            <h3 class="font-bold text-gray-100 text-base mb-2 leading-snug">${obj.name}</h3>
-            <div class="w-full bg-gray-700/60 h-2 rounded-full overflow-hidden mb-4">
-              <div class="${barColor} h-full transition-all duration-500" style="width: ${obj.score}%"></div>
-            </div>
-            <div class="text-xs text-gray-400 border-t border-gray-700/50 pt-3">
-              <strong>Key Results:</strong> ${obj.krs.length} tracked. <span class="text-blue-400 underline">Inspect details →</span>
-            </div>
-          </div>
-        `;
-        grid.innerHTML += card;
-      });
-
-      renderCompoundOKRChart();
-    }
-
-    function renderRoleView(weekData) {
-      document.getElementById('chart-title').innerText = "Role Hours Allocation Trends";
-      document.getElementById('cards-title').innerText = `${weekData.label} — Role Hours Breakdown`;
-
-      const grid = document.getElementById('cards-grid');
-      grid.innerHTML = '';
-
-      Object.entries(weekData.roles).forEach(([role, hrs]) => {
-        const card = `
-          <div onclick="openRoleModal('${role}', ${hrs})" class="bg-gray-800 border border-gray-700/70 p-5 rounded-xl shadow cursor-pointer hover:border-purple-500 hover:scale-[1.01] transition">
-            <div class="flex items-center justify-between mb-2">
-              <span class="text-xs font-bold uppercase text-purple-400 bg-purple-950/60 px-2.5 py-1 rounded border border-purple-800/50">Role Category</span>
-              <span class="text-lg font-bold text-green-400">${hrs} hrs</span>
-            </div>
-            <h3 class="font-bold text-gray-100 text-xl mb-3">${role}</h3>
-            <div class="w-full bg-gray-700/60 h-2 rounded-full overflow-hidden">
-              <div class="bg-purple-500 h-full" style="width: ${Math.min((hrs/60)*100, 100)}%"></div>
-            </div>
-          </div>
-        `;
-        grid.innerHTML += card;
-      });
-
-      renderRoleChart();
-    }
-
-    function renderCompoundOKRChart() {
-      const ctx = document.getElementById('mainChart').getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-
-      const weekKeys = Object.keys(MULTI_WEEK_DATA);
-      const okrList = ["W-LOW", "W-OAT", "H-EXR", "WI-WRT", "R-PAR", "S-MOS"];
-      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#6366F1'];
-
-      const compoundLine = {
-        label: '⚡ Compound Overall Average',
-        data: weekKeys.map(k => MULTI_WEEK_DATA[k].score),
-        borderColor: '#FFFFFF',
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        borderWidth: 4,
-        tension: 0.3,
-        pointRadius: 6,
-        fill: true
-      };
-
-      const individualLines = okrList.map((id, idx) => ({
-        label: id,
-        data: weekKeys.map(k => (MULTI_WEEK_DATA[k].okrScores && MULTI_WEEK_DATA[k].okrScores[id]) || 0),
-        borderColor: colors[idx],
-        borderWidth: 2,
-        tension: 0.3,
-        borderDash: [4, 4]
-      }));
-
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: { labels: weekKeys.map(k => MULTI_WEEK_DATA[k].label), datasets: [compoundLine, ...individualLines] },
-        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, grid: { color: '#374151' } }, x: { grid: { display: false } } } }
-      });
-    }
-
-    function renderRoleChart() {
-      const ctx = document.getElementById('mainChart').getContext('2d');
-      if (chartInstance) chartInstance.destroy();
-
-      const weekKeys = Object.keys(MULTI_WEEK_DATA);
-      const rolesList = ['Work', 'Individual', 'Family', 'Community', 'Career', 'Mentorship'];
-      const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899'];
-
-      const datasets = rolesList.map((role, idx) => ({
-        label: role,
-        data: weekKeys.map(k => MULTI_WEEK_DATA[k].roles[role] || 0),
-        borderColor: colors[idx],
-        tension: 0.3,
-        borderWidth: 2
-      }));
-
-      chartInstance = new Chart(ctx, {
-        type: 'line',
-        data: { labels: weekKeys, datasets: datasets },
-        options: { responsive: true, maintainAspectRatio: false }
-      });
-    }
-
-    function updateTodaySchedule() {
-      const now = new Date();
-      const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      const dayName = days[now.getDay()];
-      const daySchedule = SCHEDULE_TAB32[dayName] || SCHEDULE_TAB32["Monday"];
-
-      document.getElementById('day-schedule-title').innerText = `${dayName}'s Schedule (Tab 32)`;
-
-      const container = document.getElementById('today-time-slots');
-      container.innerHTML = '';
-
-      const currentHour = now.getHours();
-      let currentTask = "Personal / Recovery Time";
-      let nextTask = "Wind Down & Sleep";
-
-      const times = Object.keys(daySchedule).sort();
-
-      times.forEach((t, i) => {
-        const slotHour = parseInt(t.split(":")[0]);
-        const task = daySchedule[t];
-        const isPast = slotHour < currentHour;
-        const isCurrent = slotHour === currentHour;
-
-        if (isCurrent) {
-          currentTask = task;
-          nextTask = daySchedule[times[i + 1]] || "End of Day Routine";
-        }
-
-        let bgStyle = "bg-gray-900/60 border-gray-700/50";
-        if (isCurrent) bgStyle = "bg-purple-900/50 border-purple-500 font-bold text-white shadow";
-        else if (isPast) bgStyle = "bg-gray-900/20 border-gray-800/40 opacity-50";
-
-        container.innerHTML += `
-          <div class="flex justify-between items-center p-2.5 rounded border ${bgStyle}">
-            <span>${t}</span>
-            <span class="${isCurrent ? 'text-purple-300' : 'text-blue-300'}">${task}</span>
-          </div>
-        `;
-      });
-
-      document.getElementById('current-activity').innerText = currentTask;
-      document.getElementById('next-activity').innerText = `Up Next: ${nextTask}`;
-    }
-
-    function openModal(okrId) {
-      const weekData = MULTI_WEEK_DATA[selectedWeek];
-      const obj = weekData.okrs.find(o => o.id === okrId);
-      if (!obj) return;
-
-      const krList = obj.krs.map(k => `<li class="text-sm text-gray-300">• ${k}</li>`).join('');
-      document.getElementById('modal-content').innerHTML = `
-        <div class="text-xs font-mono text-blue-400 uppercase tracking-widest">${obj.id} — ${obj.domain}</div>
-        <h2 class="text-xl font-bold text-white mb-2">${obj.name}</h2>
-        <div class="bg-gray-900 p-3 rounded-lg border border-gray-700">
-          <div class="text-xs text-gray-400">Current Completion: <strong class="text-white text-sm">${obj.score}%</strong></div>
-        </div>
-        <div class="mt-4"><h4 class="text-xs font-bold uppercase text-gray-400 mb-2">Key Result Progress</h4><ul class="space-y-2">${krList}</ul></div>
-      `;
-      document.getElementById('detail-modal').classList.remove('hidden');
-      document.getElementById('detail-modal').classList.add('flex');
-    }
-
-    function openRoleModal(role, hrs) {
-      document.getElementById('modal-content').innerHTML = `
-        <div class="text-xs font-mono text-purple-400 uppercase tracking-widest">Role Breakdown</div>
-        <h2 class="text-xl font-bold text-white mb-2">${role} Role</h2>
-        <div class="bg-gray-900 p-4 rounded-lg border border-gray-700"><span class="text-3xl font-extrabold text-green-400">${hrs} hours</span></div>
-      `;
-      document.getElementById('detail-modal').classList.remove('hidden');
-      document.getElementById('detail-modal').classList.add('flex');
-    }
-
-    function closeModal() {
-      document.getElementById('detail-modal').classList.add('hidden');
-      document.getElementById('detail-modal').classList.remove('flex');
-    }
-
-    function startClock() {
-      setInterval(() => {
-        const now = new Date();
-        document.getElementById('live-clock').innerText = now.toLocaleTimeString();
-        document.getElementById('live-date').innerText = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-        if (activeTab === 'today') updateTodaySchedule();
-      }, 1000);
-    }
-
-    initButtons();
-    renderDashboard();
-    startClock();
-    syncDataFromAppsScript();
-  </script>
-</body>
-</html>
+  } catch (err) {
+    console.error("Direct sheet sync error:", err);
+    statusEl.innerText = "● Sheet Sync Failed";
+    statusEl.className = "text-xs text-red-400 font-semibold bg-red-950/60 border border-red-800 px-3.5 py-1.5 rounded-full";
+  }
+}
