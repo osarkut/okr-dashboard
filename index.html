@@ -3,171 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weekly Schedule - Week 32 (2026)</title>
+  <title>Weekly Plan - Live Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Custom scrollbar for clean dashboard feel */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #0f172a; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-  </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
 
-  <!-- Header -->
-  <header class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-slate-800">
-    <div>
-      <div class="flex items-center gap-2">
-        <h1 class="text-2xl font-bold tracking-tight text-white">Weekly Execution Plan</h1>
-        <span class="text-xs font-mono font-semibold text-emerald-400 bg-emerald-950/80 border border-emerald-800 px-2.5 py-0.5 rounded-full">Week 32</span>
+  <div class="max-w-3xl mx-auto space-y-6">
+
+    <!-- SUGGESTED CURRENT ACTIVITY WIDGET -->
+    <div class="bg-slate-900 border border-purple-900/50 rounded-xl p-6 shadow-xl relative overflow-hidden">
+      <div class="absolute -right-10 -top-10 w-32 h-32 bg-purple-600/10 rounded-full blur-2xl"></div>
+      <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase block mb-1">
+        Suggested Current Activity
+      </span>
+      <div id="current-activity-title" class="text-2xl font-extrabold text-emerald-400">
+        Loading...
       </div>
-      <p class="text-slate-400 text-sm mt-1">August 03, 2026 – August 09, 2026</p>
+      <div id="current-activity-next" class="text-xs text-slate-400 mt-1 font-medium">
+        Next: ...
+      </div>
     </div>
 
-    <!-- Quick Stats -->
-    <div class="flex items-center gap-3">
-      <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-center">
-        <span class="text-[10px] uppercase font-bold text-slate-500 block">Work Hours</span>
-        <span class="text-lg font-bold text-amber-400">46 hrs</span>
+    <!-- MONDAY SCHEDULE LIST (MATCHING SHEET TAB 32_AI) -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
+      <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
+        <div>
+          <h2 class="text-lg font-bold text-white">Monday Schedule (08/03)</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Week 32 Active Timeline</p>
+        </div>
+        <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded-full font-semibold">
+          ● Live Schedule
+        </span>
       </div>
-      <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-center">
-        <span class="text-[10px] uppercase font-bold text-slate-500 block">Community & Family</span>
-        <span class="text-lg font-bold text-purple-400">38 hrs</span>
-      </div>
-      <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg text-center">
-        <span class="text-[10px] uppercase font-bold text-slate-500 block">Vacation</span>
-        <span class="text-lg font-bold text-blue-400">32 hrs</span>
+
+      <!-- Schedule Timeline Items -->
+      <div id="timeline-container" class="space-y-2.5">
+        <!-- Built dynamically from your sheet image data -->
       </div>
     </div>
-  </header>
 
-  <!-- Filter Bar -->
-  <div class="max-w-7xl mx-auto mb-6 flex flex-wrap gap-2 items-center">
-    <span class="text-xs font-semibold text-slate-400 mr-2">Highlight Category:</span>
-    <button onclick="filterCategory('all')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-slate-800 text-white hover:bg-slate-700 transition">All</button>
-    <button onclick="filterCategory('work')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-amber-950/60 border border-amber-800/60 text-amber-300 hover:bg-amber-900/60 transition">Work (Lowe's/OAT)</button>
-    <button onclick="filterCategory('location')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-purple-950/60 border border-purple-800/60 text-purple-300 hover:bg-purple-900/60 transition">Locations</button>
-    <button onclick="filterCategory('community')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-rose-950/60 border border-rose-800/60 text-rose-300 hover:bg-rose-900/60 transition">Community & Kids</button>
-    <button onclick="filterCategory('vacation')" class="filter-btn text-xs font-medium px-3 py-1.5 rounded-md bg-blue-950/60 border border-blue-800/60 text-blue-300 hover:bg-blue-900/60 transition">Vacation</button>
   </div>
 
-  <!-- Calendar Grid Container -->
-  <main class="max-w-7xl mx-auto bg-slate-900/70 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-    <div class="overflow-x-auto">
-      <table class="w-full border-collapse min-w-[800px]">
-        <thead>
-          <tr class="bg-slate-950/90 text-xs font-semibold text-slate-300 border-b border-slate-800">
-            <th class="p-3 w-20 text-center border-r border-slate-800">Time</th>
-            <th class="p-3 text-center border-r border-slate-800">Monday <span class="block text-[10px] text-slate-500 font-normal">08/03</span></th>
-            <th class="p-3 text-center border-r border-slate-800">Tuesday <span class="block text-[10px] text-slate-500 font-normal">08/04</span></th>
-            <th class="p-3 text-center border-r border-slate-800">Wednesday <span class="block text-[10px] text-slate-500 font-normal">08/05</span></th>
-            <th class="p-3 text-center border-r border-slate-800">Thursday <span class="block text-[10px] text-slate-500 font-normal">08/06</span></th>
-            <th class="p-3 text-center border-r border-slate-800">Friday <span class="block text-[10px] text-slate-500 font-normal">08/07</span></th>
-            <th class="p-3 text-center border-r border-slate-800">Saturday <span class="block text-[10px] text-slate-500 font-normal">08/08</span></th>
-            <th class="p-3 text-center">Sunday <span class="block text-[10px] text-slate-500 font-normal">08/09</span></th>
-          </tr>
-        </thead>
-        <tbody id="schedule-body" class="text-xs divide-y divide-slate-800/60">
-          <!-- Rendered via JS -->
-        </tbody>
-      </table>
-    </div>
-  </main>
-
   <script>
-    // Exact Schedule Data Extracted From Your Spreadsheet Image
-    const scheduleData = [
-      { time: "6:00 am",  mon: { text: "Tech Hub", cat: "location" }, tue: { text: "Home Office", cat: "location" }, wed: { text: "Home Office", cat: "location" }, thu: { text: "Tech Hub", cat: "location" }, fri: { text: "Mooresville", cat: "location" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "7:00 am",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "8:00 am",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "9:00 am",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "10:00 am", mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "", cat: "" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "11:00 am", mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "12:00 pm", mon: { text: "Lowe's", cat: "work" }, tue: { text: "Fatih - OAT", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "1:00 pm",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Jumah", cat: "personal" }, sat: { text: "Lunch", cat: "personal" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "2:00 pm",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "3:00 pm",  mon: { text: "Lowe's", cat: "work" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Lowe's", cat: "work" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Drive", cat: "travel" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "4:00 pm",  mon: { text: "Drive", cat: "travel" }, tue: { text: "Lowe's", cat: "work" }, wed: { text: "Lowe's", cat: "work" }, thu: { text: "Drive", cat: "travel" }, fri: { text: "Lowe's", cat: "work" }, sat: { text: "Check in Resort", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "5:00 pm",  mon: { text: "Yaman's Taekwondo", cat: "kids" }, tue: { text: "Yaman's Taekwondo", cat: "kids" }, wed: { text: "Mosaic 5:30", cat: "community" }, thu: { text: "AI Working Session", cat: "ai" }, fri: { text: "Dinner", cat: "personal" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "6:00 pm",  mon: { text: "Yaman", cat: "kids" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "AI Working Session", cat: "ai" }, fri: { text: "Yaman", cat: "kids" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "7:00 pm",  mon: { text: "SCM Board", cat: "community" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Course", cat: "ai" }, fri: { text: "Yaman", cat: "kids" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "8:00 pm",  mon: { text: "Mosaic Relief", cat: "community" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Iron5", cat: "personal" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "9:00 pm",  mon: { text: "Mosaic Executives", cat: "community" }, tue: { text: "Book Club", cat: "community" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Therapy", cat: "personal" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "10:00 pm", mon: { text: "Mosaic Executives", cat: "community" }, tue: { text: "Watch", cat: "personal" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Mentorship", cat: "work" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "11:00 pm", mon: { text: "Read", cat: "personal" }, tue: { text: "Watch", cat: "personal" }, wed: { text: "Mosaic Meeting", cat: "community" }, thu: { text: "Mentorship", cat: "work" }, fri: { text: "Barakah Bros", cat: "community" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "12:00 am", mon: { text: "Reflection", cat: "personal" }, tue: { text: "Reflection", cat: "personal" }, wed: { text: "Reflection", cat: "personal" }, thu: { text: "Reflection", cat: "personal" }, fri: { text: "Reflection", cat: "personal" }, sat: { text: "Vacation", cat: "vacation" }, sun: { text: "Vacation", cat: "vacation" } },
-      { time: "1:00 am",  mon: { text: "Sleep", cat: "sleep" }, tue: { text: "Sleep", cat: "sleep" }, wed: { text: "Sleep", cat: "sleep" }, thu: { text: "Sleep", cat: "sleep" }, fri: { text: "Sleep", cat: "sleep" }, sat: { text: "Sleep", cat: "sleep" }, sun: { text: "Sleep", cat: "sleep" } }
+    // Exact Monday Schedule Data From Tab 32_ai Image
+    const mondaySchedule = [
+      { start: "06:00", end: "07:00", label: "06:00 - 07:00 AM", title: "Tech Hub", cat: "location" },
+      { start: "07:00", end: "16:00", label: "07:00 AM - 04:00 PM", title: "Lowe's Focus Work", cat: "work" },
+      { start: "16:00", end: "17:00", label: "04:00 - 05:00 PM", title: "Drive / Travel", cat: "travel" },
+      { start: "17:00", end: "18:00", label: "05:00 - 06:00 PM", title: "Yaman's Taekwondo", cat: "kids" },
+      { start: "18:00", end: "19:00", label: "06:00 - 07:00 PM", title: "Yaman", cat: "kids" },
+      { start: "19:00", end: "20:00", label: "07:00 - 08:00 PM", title: "SCM Board", cat: "community" },
+      { start: "20:00", end: "21:00", label: "08:00 - 09:00 PM", title: "Mosaic Relief", cat: "community" },
+      { start: "21:00", end: "23:00", label: "09:00 - 11:00 PM", title: "Mosaic Executives", cat: "community" },
+      { start: "23:00", end: "00:00", label: "11:00 PM - 12:00 AM", title: "Read", cat: "personal" },
+      { start: "00:00", end: "01:00", label: "12:00 - 01:00 AM", title: "Reflection", cat: "personal" },
+      { start: "01:00", end: "06:00", label: "01:00 - 06:00 AM", title: "Sleep", cat: "sleep" }
     ];
 
-    // Color mapper replicating your spreadsheet styles
-    function getCellStyles(item) {
-      if (!item.text) return "bg-slate-900/40 text-slate-600";
-
-      switch(item.cat) {
-        case "location":
-          return "bg-purple-900/80 text-purple-200 font-semibold border-l-2 border-purple-400";
-        case "work":
-          return "bg-amber-100/10 text-amber-200 border-l-2 border-amber-500/80";
-        case "kids":
-          return "bg-slate-800 text-rose-400 font-semibold border-l-2 border-rose-500";
-        case "community":
-          return "bg-slate-800 text-amber-400 font-medium border-l-2 border-amber-400";
-        case "ai":
-          return "bg-teal-950/80 text-teal-300 font-medium border-l-2 border-teal-400";
-        case "vacation":
-          return "bg-purple-950/70 text-purple-300 italic font-semibold border-l-2 border-purple-400";
-        case "travel":
-          return "bg-slate-800/80 text-slate-300 italic";
-        case "sleep":
-          return "bg-blue-950 text-blue-300 font-bold tracking-wider";
-        default:
-          return "bg-slate-800/60 text-slate-200";
+    function getCatStyles(cat) {
+      switch(cat) {
+        case "location": return "text-purple-400 bg-purple-950/40 border-purple-800/50";
+        case "work": return "text-blue-400 bg-blue-950/40 border-blue-800/50";
+        case "travel": return "text-slate-300 bg-slate-800/40 border-slate-700/50";
+        case "kids": return "text-rose-400 bg-rose-950/40 border-rose-800/50";
+        case "community": return "text-amber-400 bg-amber-950/40 border-amber-800/50";
+        case "personal": return "text-teal-400 bg-teal-950/40 border-teal-800/50";
+        case "sleep": return "text-indigo-400 bg-indigo-950/40 border-indigo-800/50";
+        default: return "text-slate-200 bg-slate-800 border-slate-700";
       }
     }
 
-    const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+    function renderSchedule() {
+      const container = document.getElementById('timeline-container');
+      container.innerHTML = '';
 
-    function renderSchedule(activeCat = 'all') {
-      const tbody = document.getElementById('schedule-body');
-      tbody.innerHTML = '';
+      const now = new Date();
+      const currentHour = now.getHours();
 
-      scheduleData.forEach(row => {
-        const tr = document.createElement('tr');
-        
-        // Time Cell
-        let html = `<td class="p-2.5 text-center font-mono text-[11px] text-slate-400 font-medium border-r border-slate-800 bg-slate-950/60">${row.time}</td>`;
+      let currentTask = "Personal & Wind Down";
+      let nextTask = "Sleep";
 
-        days.forEach(day => {
-          const item = row[day];
-          const styleClass = getCellStyles(item);
-          const isHighlighted = activeCat === 'all' || 
-                                (activeCat === 'work' && item.cat === 'work') ||
-                                (activeCat === 'location' && item.cat === 'location') ||
-                                (activeCat === 'community' && (item.cat === 'community' || item.cat === 'kids')) ||
-                                (activeCat === 'vacation' && item.cat === 'vacation');
+      mondaySchedule.forEach((item, index) => {
+        const startH = parseInt(item.start.split(':')[0], 10);
+        let endH = parseInt(item.end.split(':')[0], 10);
+        if (endH === 0) endH = 24;
 
-          const opacityClass = isHighlighted ? 'opacity-100 scale-100' : 'opacity-20 blur-[0.5px]';
+        // Check if item is active right now
+        let isActive = false;
+        if (startH < endH) {
+          isActive = currentHour >= startH && currentHour < endH;
+        } else {
+          // Handles midnight wrap
+          isActive = currentHour >= startH || currentHour < endH;
+        }
 
-          html += `
-            <td class="p-1 border-r border-slate-800/60 transition-all duration-200">
-              <div class="p-2 rounded min-h-[34px] flex items-center justify-center text-center ${styleClass} ${opacityClass}">
-                ${item.text}
-              </div>
-            </td>
-          `;
-        });
+        if (isActive) {
+          currentTask = item.title;
+          const nextItem = mondaySchedule[(index + 1) % mondaySchedule.length];
+          nextTask = nextItem ? nextItem.title : "Sleep";
+        }
 
-        tr.innerHTML = html;
-        tbody.appendChild(tr);
+        const styles = getCatStyles(item.cat);
+
+        const row = document.createElement('div');
+        row.className = `flex items-center justify-between p-3.5 rounded-lg border text-sm transition-all ${styles} ${isActive ? 'ring-2 ring-emerald-400 font-bold bg-slate-800/80' : 'opacity-90'}`;
+
+        row.innerHTML = `
+          <span class="font-mono text-xs opacity-80">${item.label}</span>
+          <span class="font-semibold">${item.title}</span>
+        `;
+        container.appendChild(row);
       });
+
+      // Update Top Widget
+      document.getElementById('current-activity-title').innerText = currentTask;
+      document.getElementById('current-activity-next').innerText = `Next: ${nextTask}`;
     }
 
-    function filterCategory(cat) {
-      renderSchedule(cat);
-    }
-
-    // Initial render
-    renderSchedule('all');
+    renderSchedule();
+    // Update active state every 60 seconds
+    setInterval(renderSchedule, 60000);
   </script>
 </body>
 </html>
