@@ -1,70 +1,146 @@
-const SHEET_ENDPOINT = "https://docs.google.com/spreadsheets/d/184A7LoWQ637eHfqM3TLeXZ53BSTngdnUEUyS-U9l31c/gviz/tq?tqx=out:json&sheet=32_ai";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2026 Weekly Plan - Tab 32_ai Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6 font-sans">
 
-async function syncDataFromAppsScript() {
-  const statusEl = document.getElementById('sync-status');
-  if (statusEl) {
-    statusEl.innerText = "Syncing Sheet Data...";
-    statusEl.className = "text-xs text-yellow-400 font-semibold bg-yellow-950/60 border border-yellow-800 px-3.5 py-1.5 rounded-full";
-  }
+  <!-- Header Section -->
+  <header class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 pb-6 border-b border-slate-800">
+    <div>
+      <h1 class="text-3xl font-bold tracking-tight text-white">Weekly Plan Dashboard</h1>
+      <p class="text-slate-400 text-sm mt-1">Live Sync: Google Sheet Tab <span class="text-emerald-400 font-mono font-semibold">32_ai</span></p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span id="sync-status" class="text-xs text-yellow-400 font-semibold bg-yellow-950/60 border border-yellow-800 px-3.5 py-1.5 rounded-full animate-pulse">
+        ● Initializing Sync...
+      </span>
+      <button onclick="syncDataFromSheet()" class="bg-slate-800 hover:bg-slate-700 text-xs px-3 py-1.5 rounded-lg border border-slate-700 transition">
+        🔄 Refresh
+      </button>
+    </div>
+  </header>
 
-  try {
-    const response = await fetch(SHEET_ENDPOINT);
-    const rawText = await response.text();
+  <main class="max-w-6xl mx-auto space-y-8">
+    
+    <!-- Summary Stats Bar -->
+    <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+        <span class="text-slate-400 text-xs uppercase font-semibold tracking-wider">Total Scheduled Items</span>
+        <div id="total-tasks" class="text-3xl font-extrabold text-white mt-1">--</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+        <span class="text-slate-400 text-xs uppercase font-semibold tracking-wider">Reminders / To-Dos</span>
+        <div id="reminder-tasks" class="text-3xl font-extrabold text-amber-400 mt-1">--</div>
+      </div>
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-5">
+        <span class="text-slate-400 text-xs uppercase font-semibold tracking-wider">Status Overview</span>
+        <div id="status-overview" class="text-3xl font-extrabold text-emerald-400 mt-1">--</div>
+      </div>
+    </section>
 
-    // 1. Extract JSON payload from Google's response wrapper
-    const jsonMatch = rawText.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-    if (!jsonMatch || !jsonMatch[1]) {
-      throw new Error("Invalid response structure from Google Sheets");
+    <!-- Task List Section -->
+    <section class="bg-slate-900/80 border border-slate-800 rounded-xl p-6">
+      <h2 class="text-lg font-semibold text-white mb-4">Task Breakdown</h2>
+      <div id="task-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="col-span-full text-center py-12 text-slate-500">
+          Loading data directly from Google Sheet...
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const SHEET_ENDPOINT = "https://docs.google.com/spreadsheets/d/184A7LoWQ637eHfqM3TLeXZ53BSTngdnUEUyS-U9l31c/gviz/tq?tqx=out:json&sheet=32_ai";
+
+    async function syncDataFromSheet() {
+      const statusEl = document.getElementById('sync-status');
+      const container = document.getElementById('task-container');
+
+      statusEl.innerText = "● Syncing Data...";
+      statusEl.className = "text-xs text-yellow-400 font-semibold bg-yellow-950/60 border border-yellow-800 px-3.5 py-1.5 rounded-full animate-pulse";
+
+      try {
+        const response = await fetch(SHEET_ENDPOINT);
+        const rawText = await response.text();
+
+        // Strip the google.visualization.Query.setResponse() wrapper
+        const jsonMatch = rawText.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
+        if (!jsonMatch || !jsonMatch[1]) throw new Error("Invalid payload structure received.");
+
+        const parsed = JSON.parse(jsonMatch[1]);
+        const cols = parsed.table.cols.map(c => c.label);
+        
+        // Map raw cells into structured JavaScript objects
+        const rows = parsed.table.rows.map(r => {
+          const item = {};
+          r.c.forEach((cell, idx) => {
+            const key = cols[idx] || `col_${idx}`;
+            item[key] = cell ? (cell.f !== undefined ? cell.f : cell.v) : null;
+          });
+          return item;
+        });
+
+        // Update Counter Cards
+        const totalItems = rows.length;
+        const reminderItems = rows.filter(r => r["Reminder?"] === "Yes" || r["Todo?"] === "Yes").length;
+        const plannedItems = rows.filter(r => r["Status"] === "Planned").length;
+
+        document.getElementById('total-tasks').innerText = totalItems;
+        document.getElementById('reminder-tasks').innerText = reminderItems;
+        document.getElementById('status-overview').innerText = `${plannedItems} Planned`;
+
+        // Render Task Cards
+        container.innerHTML = "";
+        rows.forEach(item => {
+          const taskName = item["Task"] || "Unnamed Entry";
+          const day = item["Day"] || "Unscheduled";
+          const date = item["Date"] || "";
+          const role = item["Role"] || "General";
+          const area = item["Area"] || "";
+          const type = item["Type"] || "Task";
+          const startTime = item["Start Time"] || "";
+          const endTime = item["End Time"] || "";
+          const isReminder = item["Reminder?"] === "Yes";
+
+          const card = document.createElement('div');
+          card.className = "bg-slate-950 border border-slate-800 rounded-lg p-4 flex flex-col justify-between hover:border-slate-700 transition";
+
+          card.innerHTML = `
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-semibold px-2 py-0.5 rounded ${isReminder ? 'bg-amber-950/80 text-amber-400 border border-amber-800/50' : 'bg-slate-800 text-slate-300'}">
+                  ${role}${area ? ' • ' + area : ''}
+                </span>
+                <span class="text-xs text-slate-400 font-mono">${day} ${date}</span>
+              </div>
+              <h3 class="text-base font-semibold text-slate-100">${taskName}</h3>
+            </div>
+            <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-900 text-xs text-slate-400">
+              <span>${startTime && endTime ? startTime + ' - ' + endTime : type}</span>
+              <span class="text-emerald-400 font-medium">${item["Status"] || 'Active'}</span>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+
+        statusEl.innerText = "● Live Sync Active";
+        statusEl.className = "text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-800 px-3.5 py-1.5 rounded-full";
+
+      } catch (err) {
+        console.error("Fetch/Parse Error:", err);
+        statusEl.innerText = "● Sync Error";
+        statusEl.className = "text-xs text-rose-400 font-semibold bg-rose-950/60 border border-rose-800 px-3.5 py-1.5 rounded-full";
+        container.innerHTML = `<div class="col-span-full text-center py-8 text-rose-400">Failed to load sheet data: ${err.message}</div>`;
+      }
     }
 
-    const parsedData = JSON.parse(jsonMatch[1]);
-    const table = parsedData.table;
-
-    // 2. Map Google columns to key names
-    const headers = table.cols.map(col => col.label);
-
-    // 3. Format rows into clean objects
-    const rows = table.rows.map(row => {
-      const rowObj = {};
-      row.c.forEach((cell, idx) => {
-        const key = headers[idx] || `col_${idx}`;
-        if (cell) {
-          rowObj[key] = cell.f !== undefined ? cell.f : cell.v;
-        } else {
-          rowObj[key] = null;
-        }
-      });
-      return rowObj;
-    });
-
-    console.log("Parsed rows successfully:", rows);
-
-    // 4. Update UI Dashboard Counters
-    const validTasks = rows.filter(r => r["Task"]);
-    const greenTasksCount = rows.filter(r => r["Status"] === "Completed" || r["Status"] === "Done").length;
-
-    const greenTasksEl = document.getElementById('green-tasks');
-    if (greenTasksEl) greenTasksEl.innerText = `${validTasks.length} Tasks`;
-
-    const overallScoreEl = document.getElementById('overall-score');
-    if (overallScoreEl) {
-      const percentage = validTasks.length > 0 ? Math.round((greenTasksCount / validTasks.length) * 100) : 0;
-      overallScoreEl.innerText = `${percentage}%`;
-    }
-
-    if (statusEl) {
-      statusEl.innerText = "● Tab 32_ai Live Sync Active";
-      statusEl.className = "text-xs text-green-400 font-semibold bg-green-950/60 border border-green-800 px-3.5 py-1.5 rounded-full";
-    }
-
-  } catch (err) {
-    console.error("Dashboard Sync Failed:", err);
-    if (statusEl) {
-      statusEl.innerText = "● Sync Error";
-      statusEl.className = "text-xs text-red-400 font-semibold bg-red-950/60 border border-red-800 px-3.5 py-1.5 rounded-full";
-    }
-  }
-}
-
-// Ensure function executes on page load
-document.addEventListener("DOMContentLoaded", syncDataFromAppsScript);
+    // Auto-fetch on page load
+    document.addEventListener("DOMContentLoaded", syncDataFromSheet);
+  </script>
+</body>
+</html>
