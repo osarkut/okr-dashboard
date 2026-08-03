@@ -1,128 +1,56 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Weekly Plan - Live Dashboard</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 font-sans">
-
-  <div class="max-w-3xl mx-auto space-y-6">
-
-    <!-- SUGGESTED CURRENT ACTIVITY WIDGET -->
-    <div class="bg-slate-900 border border-purple-900/50 rounded-xl p-6 shadow-xl relative overflow-hidden">
-      <div class="absolute -right-10 -top-10 w-32 h-32 bg-purple-600/10 rounded-full blur-2xl"></div>
-      <span class="text-[11px] font-bold tracking-wider text-slate-400 uppercase block mb-1">
-        Suggested Current Activity
-      </span>
-      <div id="current-activity-title" class="text-2xl font-extrabold text-emerald-400">
-        Loading...
-      </div>
-      <div id="current-activity-next" class="text-xs text-slate-400 mt-1 font-medium">
-        Next: ...
-      </div>
-    </div>
-
-    <!-- MONDAY SCHEDULE LIST (MATCHING SHEET TAB 32_AI) -->
-    <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
-      <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-800">
-        <div>
-          <h2 class="text-lg font-bold text-white">Monday Schedule (08/03)</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Week 32 Active Timeline</p>
-        </div>
-        <span class="text-xs bg-emerald-950 text-emerald-400 border border-emerald-800 px-3 py-1 rounded-full font-semibold">
-          ● Live Schedule
-        </span>
-      </div>
-
-      <!-- Schedule Timeline Items -->
-      <div id="timeline-container" class="space-y-2.5">
-        <!-- Built dynamically from your sheet image data -->
-      </div>
-    </div>
-
+<!-- MONDAY SCHEDULE (UPDATED FROM SHEET TAB 32_AI) -->
+<div class="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl">
+  <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-800">
+    <h3 class="text-base font-bold text-white">Monday Active Schedule</h3>
+    <span class="text-xs text-emerald-400 font-mono bg-emerald-950 px-2.5 py-1 rounded-full border border-emerald-800">
+      08/03/2026
+    </span>
   </div>
 
-  <script>
-    // Exact Monday Schedule Data From Tab 32_ai Image
-    const mondaySchedule = [
-      { start: "06:00", end: "07:00", label: "06:00 - 07:00 AM", title: "Tech Hub", cat: "location" },
-      { start: "07:00", end: "16:00", label: "07:00 AM - 04:00 PM", title: "Lowe's Focus Work", cat: "work" },
-      { start: "16:00", end: "17:00", label: "04:00 - 05:00 PM", title: "Drive / Travel", cat: "travel" },
-      { start: "17:00", end: "18:00", label: "05:00 - 06:00 PM", title: "Yaman's Taekwondo", cat: "kids" },
-      { start: "18:00", end: "19:00", label: "06:00 - 07:00 PM", title: "Yaman", cat: "kids" },
-      { start: "19:00", end: "20:00", label: "07:00 - 08:00 PM", title: "SCM Board", cat: "community" },
-      { start: "20:00", end: "21:00", label: "08:00 - 09:00 PM", title: "Mosaic Relief", cat: "community" },
-      { start: "21:00", end: "23:00", label: "09:00 - 11:00 PM", title: "Mosaic Executives", cat: "community" },
-      { start: "23:00", end: "00:00", label: "11:00 PM - 12:00 AM", title: "Read", cat: "personal" },
-      { start: "00:00", end: "01:00", label: "12:00 - 01:00 AM", title: "Reflection", cat: "personal" },
-      { start: "01:00", end: "06:00", label: "01:00 - 06:00 AM", title: "Sleep", cat: "sleep" }
-    ];
-
-    function getCatStyles(cat) {
-      switch(cat) {
-        case "location": return "text-purple-400 bg-purple-950/40 border-purple-800/50";
-        case "work": return "text-blue-400 bg-blue-950/40 border-blue-800/50";
-        case "travel": return "text-slate-300 bg-slate-800/40 border-slate-700/50";
-        case "kids": return "text-rose-400 bg-rose-950/40 border-rose-800/50";
-        case "community": return "text-amber-400 bg-amber-950/40 border-amber-800/50";
-        case "personal": return "text-teal-400 bg-teal-950/40 border-teal-800/50";
-        case "sleep": return "text-indigo-400 bg-indigo-950/40 border-indigo-800/50";
-        default: return "text-slate-200 bg-slate-800 border-slate-700";
-      }
-    }
-
-    function renderSchedule() {
-      const container = document.getElementById('timeline-container');
-      container.innerHTML = '';
-
-      const now = new Date();
-      const currentHour = now.getHours();
-
-      let currentTask = "Personal & Wind Down";
-      let nextTask = "Sleep";
-
-      mondaySchedule.forEach((item, index) => {
-        const startH = parseInt(item.start.split(':')[0], 10);
-        let endH = parseInt(item.end.split(':')[0], 10);
-        if (endH === 0) endH = 24;
-
-        // Check if item is active right now
-        let isActive = false;
-        if (startH < endH) {
-          isActive = currentHour >= startH && currentHour < endH;
-        } else {
-          // Handles midnight wrap
-          isActive = currentHour >= startH || currentHour < endH;
-        }
-
-        if (isActive) {
-          currentTask = item.title;
-          const nextItem = mondaySchedule[(index + 1) % mondaySchedule.length];
-          nextTask = nextItem ? nextItem.title : "Sleep";
-        }
-
-        const styles = getCatStyles(item.cat);
-
-        const row = document.createElement('div');
-        row.className = `flex items-center justify-between p-3.5 rounded-lg border text-sm transition-all ${styles} ${isActive ? 'ring-2 ring-emerald-400 font-bold bg-slate-800/80' : 'opacity-90'}`;
-
-        row.innerHTML = `
-          <span class="font-mono text-xs opacity-80">${item.label}</span>
-          <span class="font-semibold">${item.title}</span>
-        `;
-        container.appendChild(row);
-      });
-
-      // Update Top Widget
-      document.getElementById('current-activity-title').innerText = currentTask;
-      document.getElementById('current-activity-next').innerText = `Next: ${nextTask}`;
-    }
-
-    renderSchedule();
-    // Update active state every 60 seconds
-    setInterval(renderSchedule, 60000);
-  </script>
-</body>
-</html>
+  <div class="space-y-2 text-sm font-sans">
+    <div class="flex justify-between p-3 rounded bg-purple-950/40 border border-purple-800/50 text-purple-300">
+      <span class="font-mono text-xs opacity-80">06:00 - 07:00 AM</span>
+      <span class="font-semibold">Tech Hub</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-blue-950/40 border border-blue-800/50 text-blue-300">
+      <span class="font-mono text-xs opacity-80">07:00 AM - 04:00 PM</span>
+      <span class="font-semibold">Lowe's Focus Work</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-slate-800/60 border border-slate-700/50 text-slate-300">
+      <span class="font-mono text-xs opacity-80">04:00 - 05:00 PM</span>
+      <span class="font-semibold">Drive</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-rose-950/40 border border-rose-800/50 text-rose-300">
+      <span class="font-mono text-xs opacity-80">05:00 - 06:00 PM</span>
+      <span class="font-semibold">Yaman's Taekwondo</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-rose-950/40 border border-rose-800/50 text-rose-300">
+      <span class="font-mono text-xs opacity-80">06:00 - 07:00 PM</span>
+      <span class="font-semibold">Yaman</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-amber-950/40 border border-amber-800/50 text-amber-300">
+      <span class="font-mono text-xs opacity-80">07:00 - 08:00 PM</span>
+      <span class="font-semibold">SCM Board</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-amber-950/40 border border-amber-800/50 text-amber-300">
+      <span class="font-mono text-xs opacity-80">08:00 - 09:00 PM</span>
+      <span class="font-semibold">Mosaic Relief</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-amber-950/40 border border-amber-800/50 text-amber-300">
+      <span class="font-mono text-xs opacity-80">09:00 - 11:00 PM</span>
+      <span class="font-semibold">Mosaic Executives</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-teal-950/40 border border-teal-800/50 text-teal-300">
+      <span class="font-mono text-xs opacity-80">11:00 PM - 12:00 AM</span>
+      <span class="font-semibold">Read</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-teal-950/40 border border-teal-800/50 text-teal-300">
+      <span class="font-mono text-xs opacity-80">12:00 - 01:00 AM</span>
+      <span class="font-semibold">Reflection</span>
+    </div>
+    <div class="flex justify-between p-3 rounded bg-indigo-950/40 border border-indigo-800/50 text-indigo-300 font-bold">
+      <span class="font-mono text-xs opacity-80">01:00 - 06:00 AM</span>
+      <span>Sleep</span>
+    </div>
+  </div>
+</div>
